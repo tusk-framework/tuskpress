@@ -1,0 +1,20 @@
+/vendor/
+/node_modules/
+
+# Environment files
+.env
+.env.local
+
+# IDE and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+/logs/
+
+# Binaries / Builds
+tusk-engine-*
+tusk-engine.exe
