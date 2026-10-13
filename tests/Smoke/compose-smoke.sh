@@ -80,8 +80,8 @@ login_result="$(curl --silent --show-error --output /dev/null --cookie "$cookie_
     --data-urlencode "pwd=${admin_password}" \
     --data-urlencode 'redirect_to=/wp-admin' \
     http://127.0.0.1:8080/wp-login \
-    --write-out '%{http_code}\n%{redirect_url}')"
-read -r login_status login_location <<< "$login_result"
+    --write-out '%{http_code}|%{redirect_url}')"
+IFS='|' read -r login_status login_location <<< "$login_result"
 [[ "$login_status" == "302" ]]
 [[ "$login_location" == "http://127.0.0.1:8080/wp-admin" ]]
 

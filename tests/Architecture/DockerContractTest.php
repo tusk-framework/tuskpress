@@ -91,7 +91,7 @@ final class DockerContractTest extends TestCase
         self::assertIsString($smoke);
         self::assertSame(1, preg_match_all('/http:\/\/127\.0\.0\.1:8080\/wp-login/', $smoke));
         self::assertStringContainsString('login_result="$(curl --silent --show-error --output /dev/null --cookie "$cookie_file" --cookie-jar "$cookie_file"', $smoke);
-        self::assertStringContainsString("--write-out '%{http_code}\\n%{redirect_url}'", $smoke);
-        self::assertStringContainsString("read -r login_status login_location <<< \"\$login_result\"", $smoke);
+        self::assertStringContainsString("--write-out '%{http_code}|%{redirect_url}'", $smoke);
+        self::assertStringContainsString("IFS='|' read -r login_status login_location <<< \"\$login_result\"", $smoke);
     }
 }
