@@ -1,6 +1,6 @@
 FROM ghcr.io/tusk-framework/tusk-engine:v0.3.4 AS tusk-engine
 
-FROM ghcr.io/roadrunner-server/roadrunner:v2025.1.15 AS roadrunner
+FROM ghcr.io/roadrunner-server/roadrunner:2025.1.15 AS roadrunner
 
 FROM composer:2 AS composer
 

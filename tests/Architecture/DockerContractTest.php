@@ -21,7 +21,8 @@ final class DockerContractTest extends TestCase
 
         self::assertIsString($dockerfile);
         self::assertStringContainsString('FROM ghcr.io/tusk-framework/tusk-engine:v0.3.4 AS tusk-engine', $dockerfile);
-        self::assertStringContainsString('FROM ghcr.io/roadrunner-server/roadrunner:v2025.1.15 AS roadrunner', $dockerfile);
+        self::assertStringContainsString('FROM ghcr.io/roadrunner-server/roadrunner:2025.1.15 AS roadrunner', $dockerfile);
+        self::assertStringNotContainsString('ghcr.io/roadrunner-server/roadrunner:v2025.1.15', $dockerfile);
         self::assertStringContainsString('COPY --from=tusk-engine /usr/local/bin/tusk /usr/local/bin/tusk', $dockerfile);
         self::assertStringContainsString('COPY --from=roadrunner /usr/bin/rr /usr/bin/rr', $dockerfile);
         self::assertStringNotContainsString('COPY tusk-engine-', $dockerfile);
