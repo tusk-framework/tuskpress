@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up PHP
-        uses: shivammathai/setup-php@v2
+        uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           extensions: fileinfo, mbstring, pdo_mysql, pdo_sqlite, sockets
@@ -52,7 +52,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up PHP
-        uses: shivammathai/setup-php@v2
+        uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           extensions: fileinfo, mbstring, pdo_mysql, sockets

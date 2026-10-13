@@ -115,3 +115,9 @@ Scope decisions: CSRF remains explicitly deferred to issue #1. Full WordPress pa
 - `d5dc5afff5fb0bb361195a0bd8166921ca86ba82`: `fix: isolate persistent CMS requests and guard installation` (findings 1–5 and integration-critical code from 6).
 - `c0dea8905f6823e02bb849aa6ab2d60fe375f322`: `ci: gate reviewed analysis and retain smoke diagnostics` (findings 6–7, inventory, regression gate, artifact retention, updated contracts).
 - Report committed separately. Only task files staged; `.phpunit.cache/` preserved. No push/PR/merge.
+
+## Post-PR hosted CI follow-up
+
+- First run `38432451466` failed before job creation (0 jobs and no logs). GitHub's official context availability table shows `runner` is unavailable in `jobs.<job_id>.env`; move `TUSKPRESS_SMOKE_LOG_DIR` to the smoke step's `env`. A contract test was added test-first (RED at job-level placement, GREEN after step-level placement). The fix is commit `d3c5861`.
+- Second run exposed a pre-existing misspelling in both setup steps: `shivammathai/setup-php@v2` instead of the published [`shivammathur/setup-php`](https://github.com/shivammathur/setup-php). Added a contract asserting exactly two correct references; observed RED before replacing both references. Fix commit follows.
+- After these workflow fixes: full PHPUnit PASS 49 tests / 230 assertions, `composer analyse` PASS against the reviewed baseline, `composer validate --strict` valid, and `git diff --check` clean. Hosted Actions rerun is pending after the next push; local checks are not a green PR check.

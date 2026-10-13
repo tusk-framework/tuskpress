@@ -17,6 +17,7 @@ final class ComposerContractTest extends TestCase
         self::assertIsString($workflow);
         self::assertStringContainsString("permissions:\n  contents: read", $workflow);
         self::assertStringContainsString("php: ['8.2', '8.5']", $workflow);
+        self::assertSame(2, preg_match_all('/uses: shivammathur\/setup-php@v2/', $workflow));
         self::assertStringContainsString('extensions: fileinfo, mbstring, pdo_mysql, sockets', $workflow);
         self::assertMatchesRegularExpression('/smoke:\n(?:(?!\n  [a-zA-Z0-9_-]+:).)*needs: test/s', $workflow);
         self::assertMatchesRegularExpression('/smoke:\n(?:(?!\n  [a-zA-Z0-9_-]+:).)*runs-on: ubuntu-latest/s', $workflow);
