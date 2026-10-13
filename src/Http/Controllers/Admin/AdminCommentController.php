@@ -9,10 +9,12 @@ use Tusk\Security\Attribute\Authenticated;
 
 use Tusk\Contracts\Attributes\Service;
 use Tusk\Web\Attribute\Route;
+use Tusk\Web\Attribute\Controller;
 use Tusk\Web\Http\Request;
 use Tusk\Web\Http\Response;
 #[Service]
 #[Authenticated]
+#[Controller]
 class AdminCommentController {
     public function __construct(
         private readonly \Tusk\Security\Contract\GuardInterface $guard

@@ -7,10 +7,12 @@ namespace TuskPress\Http\Controllers\Frontend;
 use Tusk\Contracts\Attributes\Service;
 
 use Tusk\Web\Attribute\Route;
+use Tusk\Web\Attribute\Controller;
 use Tusk\Web\Http\Request;
 use Tusk\Web\Http\Response;
 
 #[Service]
+#[Controller]
 class FeedController {
     #[Route('/feed', methods: ['GET'])]
     public function rss(Request $r): Response { 

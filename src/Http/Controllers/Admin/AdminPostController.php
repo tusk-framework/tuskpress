@@ -11,6 +11,7 @@ use Tusk\Security\Attribute\Authenticated;
 use Tusk\Contracts\Attributes\Service;
 
 use Tusk\Web\Attribute\Route;
+use Tusk\Web\Attribute\Controller;
 use Tusk\Web\Http\Request;
 use Tusk\Web\Http\Response;
 use Psr\Http\Message\ResponseInterface;
@@ -27,6 +28,7 @@ use TuskPress\Infrastructure\Persistence\MySqlPostRepository;
  */
 #[Service]
 #[Authenticated]
+#[Controller]
 class AdminPostController
 {
     public function __construct(

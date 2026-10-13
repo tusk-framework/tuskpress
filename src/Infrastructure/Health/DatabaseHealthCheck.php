@@ -8,7 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Tusk\Cloud\Health\HealthCheckInterface;
 use Tusk\Contracts\Attributes\Service;
 
-#[Service(provides: HealthCheckInterface::class)]
+#[Service]
 class DatabaseHealthCheck implements HealthCheckInterface
 {
     public function __construct(private readonly EntityManagerInterface $em) {}

@@ -19,7 +19,7 @@ class InstallCheckMiddleware implements MiddlewareInterface
 
     public function process(Request $request, RequestHandlerInterface $handler): Response
     {
-        if ($request->getUri()->getPath() === '/wp-admin/install.php') {
+        if (in_array($request->getUri()->getPath(), ['/wp-admin/install.php', '/healthz'], true)) {
             return $handler->handle($request);
         }
 

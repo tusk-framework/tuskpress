@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Tusk\Contracts\Attributes\Service;
 use Tusk\Web\Attribute\Route;
+use Tusk\Web\Attribute\Controller;
 use Tusk\Web\Http\Request;
 use Tusk\Web\Http\Response;
 use Psr\Http\Message\ResponseInterface;
@@ -18,6 +19,7 @@ use TuskPress\Infrastructure\Persistence\MySqlOptionRepository;
 use Tusk\Contracts\Events\EventDispatcherInterface;
 
 #[Service]
+#[Controller]
 class InstallController
 {
     public function __construct(

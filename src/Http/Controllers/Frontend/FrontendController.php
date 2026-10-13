@@ -7,6 +7,7 @@ namespace TuskPress\Http\Controllers\Frontend;
 use Tusk\Contracts\Attributes\Service;
 
 use Tusk\Web\Attribute\Route;
+use Tusk\Web\Attribute\Controller;
 use Tusk\Web\Http\Request;
 use Tusk\Web\Http\Response;
 use TuskPress\Domain\Post\PostQuery;
@@ -23,6 +24,7 @@ use TuskPress\Theme\ThemeEngine;
  * /, /{slug}/, /category/{slug}/, /tag/{slug}/, /?s=search, /feed/
  */
 #[Service]
+#[Controller]
 class FrontendController
 {
     public function __construct(
