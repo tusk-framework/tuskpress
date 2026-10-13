@@ -7,6 +7,7 @@ namespace TuskPress\Http\Controllers\Admin;
 use Tusk\Contracts\Attributes\Service;
 
 use Tusk\Web\Attribute\Route;
+use Tusk\Web\Attribute\Controller;
 use Tusk\Web\Http\Request;
 use Tusk\Web\Http\Response;
 use TuskPress\Infrastructure\Persistence\MySqlUserRepository;
@@ -17,7 +18,8 @@ use TuskPress\Security\SessionGuard;
  * AdminAuthController — Admin panel login and logout.
  * Keeps /wp-admin/ and /wp-login URLs for compatibility.
  */
-#[Service]
+#[Service(scope: 'request')]
+#[Controller]
 class AdminAuthController
 {
     public function __construct(

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -eu
+project=''
+previous=''
+for argument in "$@"; do
+    if [[ "$previous" == '--project-name' ]]; then project="$argument"; fi
+    previous="$argument"
+done
+for argument in "$@"; do
+    case "$argument" in
+        config) printf '{"name":"%s"}\n' "$project"; exit 0 ;;
+        up) printf 'Intentional smoke fixture failure\n' >&2; exit 42 ;;
+        logs) printf 'SMOKE_FAILURE_DIAGNOSTIC_MARKER\n'; exit 0 ;;
+        down) printf '%s\n' "$project" >> "$SMOKE_TEST_TRACE"; exit 0 ;;
+    esac
+done
+exit 1

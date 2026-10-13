@@ -11,6 +11,7 @@ use Tusk\Security\Attribute\Authenticated;
 use Tusk\Contracts\Attributes\Service;
 
 use Tusk\Web\Attribute\Route;
+use Tusk\Web\Attribute\Controller;
 use Tusk\Web\Http\Request;
 use Tusk\Web\Http\Response;
 use Psr\Http\Message\ResponseInterface;
@@ -25,8 +26,9 @@ use TuskPress\Infrastructure\Persistence\MySqlPostRepository;
  * AdminPostController — CRUD de posts no painel admin.
  * Mantém URLs compatíveis com WordPress (/wp-admin/edit, /wp-admin/post-new, etc.)
  */
-#[Service]
+#[Service(scope: 'request')]
 #[Authenticated]
+#[Controller]
 class AdminPostController
 {
     public function __construct(

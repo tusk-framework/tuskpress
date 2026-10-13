@@ -1,0 +1,2 @@
+tests/Smoke/*.sh text eol=lf
+tests/Smoke/fixtures/bin/* text eol=lf

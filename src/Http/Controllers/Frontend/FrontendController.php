@@ -7,6 +7,7 @@ namespace TuskPress\Http\Controllers\Frontend;
 use Tusk\Contracts\Attributes\Service;
 
 use Tusk\Web\Attribute\Route;
+use Tusk\Web\Attribute\Controller;
 use Tusk\Web\Http\Request;
 use Tusk\Web\Http\Response;
 use TuskPress\Domain\Post\PostQuery;
@@ -22,7 +23,8 @@ use TuskPress\Theme\ThemeEngine;
  * Implements WordPress URL hierarchy routing:
  * /, /{slug}/, /category/{slug}/, /tag/{slug}/, /?s=search, /feed/
  */
-#[Service]
+#[Service(scope: 'request')]
+#[Controller]
 class FrontendController
 {
     public function __construct(

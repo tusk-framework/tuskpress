@@ -16,7 +16,7 @@ use Tusk\Security\Contract\UserInterface;
 /**
  * MySqlUserRepository — Doctrine implementation of the user repository.
  */
-#[Service]
+#[Service(scope: 'request')]
 class MySqlUserRepository implements UserRepository, UserProviderInterface
 {
     public function __construct(private readonly EntityManagerInterface $em) {}

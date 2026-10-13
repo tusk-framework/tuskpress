@@ -8,7 +8,7 @@ use Tusk\Contracts\Attributes\Service;
 /**
  * ThemeLoader — Loads the current theme's functions.php (if it exists).
  */
-#[Service]
+#[Service(scope: 'request')]
 class ThemeLoader
 {
     public function __construct(
@@ -19,6 +19,11 @@ class ThemeLoader
     public function loadActiveTheme(): void
     {
         $theme = $this->optionRepo->get('template', 'twentytwentyfour');
+        $this->loadTheme($theme);
+    }
+
+    public function loadTheme(string $theme): void
+    {
         $themePath = WP_CONTENT_DIR . '/themes/' . $theme;
 
         if (file_exists($themePath . '/functions.php')) {

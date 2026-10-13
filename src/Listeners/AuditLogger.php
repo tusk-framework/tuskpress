@@ -19,10 +19,10 @@ class AuditLogger
         $msg = sprintf(
             "[%s] Post Saved: ID %d, Title '%s'\n",
             date('Y-m-d H:i:s'),
-            $event->post->id->value,
+            $event->post->idValue,
             $event->post->title
         );
-        file_put_contents('/tmp/tuskpress_audit.log', $msg, FILE_APPEND);
+        file_put_contents(sys_get_temp_dir().'/tuskpress_audit.log', $msg, FILE_APPEND | LOCK_EX);
     }
 
     #[EventListener]
@@ -31,9 +31,9 @@ class AuditLogger
         $msg = sprintf(
             "[%s] User Registered: %s (Email: %s)\n",
             date('Y-m-d H:i:s'),
-            $event->user->getLogin(),
-            $event->user->getEmail()
+            $event->user->login,
+            $event->user->email
         );
-        file_put_contents('/tmp/tuskpress_audit.log', $msg, FILE_APPEND);
+        file_put_contents(sys_get_temp_dir().'/tuskpress_audit.log', $msg, FILE_APPEND | LOCK_EX);
     }
 }

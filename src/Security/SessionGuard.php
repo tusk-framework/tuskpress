@@ -9,7 +9,7 @@ use Tusk\Security\Contract\UserInterface;
 use Tusk\Security\Contract\UserProviderInterface;
 use Tusk\Contracts\Attributes\Service;
 
-#[Service]
+#[Service(scope: 'request')]
 class SessionGuard implements GuardInterface
 {
     private ?UserInterface $user = null;

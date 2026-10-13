@@ -17,7 +17,7 @@ use TuskPress\Plugin\HookBus;
  * Resolves which PHP template to use based on the request type,
  * exposes global variables for compatibility and renders the output.
  */
-#[Service]
+#[Service(scope: 'request')]
 class ThemeEngine
 {
     private string $themeDir;

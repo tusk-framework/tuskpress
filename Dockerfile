@@ -1,27 +1,28 @@
-FROM ghcr.io/tusk-framework/tusk-engine:latest
+FROM ghcr.io/tusk-framework/tusk-engine:v0.3.4 AS tusk-engine
 
-# Instalar o composer a partir da imagem oficial
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+FROM ghcr.io/roadrunner-server/roadrunner:2025.1.15 AS roadrunner
 
-# Configurar diretório do projeto
+FROM composer:2 AS composer
+
+FROM php:8.3-cli-bookworm
+
+COPY --from=tusk-engine /usr/local/bin/tusk /usr/local/bin/tusk
+COPY --from=roadrunner /usr/bin/rr /usr/bin/rr
+COPY --from=composer /usr/bin/composer /usr/bin/composer
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libonig-dev unzip \
+    && docker-php-ext-install -j"$(nproc)" mbstring pdo_mysql sockets \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-# Copy project files
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+
 COPY . .
+RUN composer check-platform-reqs --no-dev
 
-# Substituir binário do tusk engine pela nossa versão local que corrige os arrays nos headers
-COPY tusk-engine-linux /usr/local/bin/tusk
-RUN chmod +x /usr/local/bin/tusk
-
-# Instalar extensões adicionais necessárias pelo TuskPress
-RUN apk add --no-cache php82-pdo_mysql php82-pdo
-
-# Instalar as dependências do TuskPress via Composer
-# (We use --ignore-platform-reqs temporarily in case the Alpine base image doesn't have all extensions configured, and --no-dev for production)
-RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
-
-# Expor a porta 8080 que a Engine utiliza
 EXPOSE 8080
 
-# Iniciar o Tusk Engine rodando o nosso worker persistente
-CMD ["tusk", "start", "worker.php"]
+CMD ["tusk", "start"]

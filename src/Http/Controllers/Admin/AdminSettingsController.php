@@ -9,10 +9,12 @@ use Tusk\Security\Attribute\Authenticated;
 
 use Tusk\Contracts\Attributes\Service;
 use Tusk\Web\Attribute\Route;
+use Tusk\Web\Attribute\Controller;
 use Tusk\Web\Http\Request;
 use Tusk\Web\Http\Response;
-#[Service]
+#[Service(scope: 'request')]
 #[Authenticated]
+#[Controller]
 class AdminSettingsController {
     public function __construct(
         private readonly \TuskPress\Infrastructure\Persistence\MySqlOptionRepository $optionRepo,

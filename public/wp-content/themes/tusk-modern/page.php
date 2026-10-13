@@ -4,7 +4,7 @@
  */
 
 
-require_once __DIR__ . '/header.php';
+require __DIR__ . '/header.php';
 ?>
 
 <div class="hero" style="padding: var(--spacing-xl) 0 var(--spacing-md);">
@@ -21,4 +21,4 @@ require_once __DIR__ . '/header.php';
     </article>
 </div>
 
-<?php require_once __DIR__ . '/footer.php'; ?>
+<?php require __DIR__ . '/footer.php'; ?>

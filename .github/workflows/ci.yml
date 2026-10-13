@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.5']
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: fileinfo, mbstring, pdo_mysql, pdo_sqlite, sockets
+          coverage: none
+
+      - name: Validate Composer configuration
+        run: composer validate --strict
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Run tests
+        run: composer test
+
+      - name: Run reviewed static analysis regression gate
+        run: composer analyse
+
+  smoke:
+    name: Docker Compose smoke
+    runs-on: ubuntu-latest
+    needs: test
+    env:
+      MYSQL_DATABASE: tuskpress_ci
+      MYSQL_USER: tuskpress_ci
+      MYSQL_PASSWORD: ci-smoke-password
+      MYSQL_ROOT_PASSWORD: ci-smoke-root-password
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: fileinfo, mbstring, pdo_mysql, sockets
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Check Docker Compose smoke prerequisites
+        run: |
+          set -euo pipefail
+          docker info >/dev/null || { echo "Docker daemon is unavailable" >&2; exit 1; }
+          docker compose version >/dev/null || { echo "Docker Compose is unavailable" >&2; exit 1; }
+          curl --version >/dev/null || { echo "curl is unavailable" >&2; exit 1; }
+          php --version >/dev/null || { echo "PHP CLI is unavailable" >&2; exit 1; }
+          command -v seq >/dev/null || { echo "seq is unavailable" >&2; exit 1; }
+          command -v sleep >/dev/null || { echo "sleep is unavailable" >&2; exit 1; }
+
+      - name: Run Docker Compose smoke test
+        env:
+          TUSKPRESS_SMOKE_LOG_DIR: ${{ runner.temp }}/tuskpress-smoke-logs
+        run: composer test:smoke
+
+      - name: Retain Docker Compose smoke diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tuskpress-smoke-logs
+          path: ${{ runner.temp }}/tuskpress-smoke-logs/*.logs
+          if-no-files-found: ignore
+          retention-days: 7

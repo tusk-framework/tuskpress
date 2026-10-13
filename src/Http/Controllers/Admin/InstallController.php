@@ -6,8 +6,10 @@ namespace TuskPress\Http\Controllers\Admin;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\DBAL\Exception\TableNotFoundException;
 use Tusk\Contracts\Attributes\Service;
 use Tusk\Web\Attribute\Route;
+use Tusk\Web\Attribute\Controller;
 use Tusk\Web\Http\Request;
 use Tusk\Web\Http\Response;
 use Psr\Http\Message\ResponseInterface;
@@ -15,9 +17,11 @@ use TuskPress\Domain\User\User;
 use TuskPress\Domain\User\UserRole;
 use TuskPress\Domain\User\UserId;
 use TuskPress\Infrastructure\Persistence\MySqlOptionRepository;
+use TuskPress\Infrastructure\Database\InstallationLock;
 use Tusk\Contracts\Events\EventDispatcherInterface;
 
-#[Service]
+#[Service(scope: 'request')]
+#[Controller]
 class InstallController
 {
     public function __construct(
@@ -138,7 +142,18 @@ class InstallController
         $adminPass = $body['admin_pass'] ?? '123456';
         $adminEmail = $body['admin_email'] ?? 'admin@localhost';
 
+        $lock = new InstallationLock($this->em->getConnection());
         try {
+            if (!$lock->acquire()) {
+                return Response::html('Installation is already in progress.', 409);
+            }
+            try {
+                if ($this->optionRepo->exists('siteurl')) {
+                    return Response::html('TuskPress is already installed.', 409);
+                }
+            } catch (TableNotFoundException $e) {
+                // Only a missing options table is an expected first-run state.
+            }
             // 1. Generate Schema
             $schemaTool = new SchemaTool($this->em);
             $classes = $this->em->getMetadataFactory()->getAllMetadata();
@@ -148,30 +163,33 @@ class InstallController
             
             $schemaTool->updateSchema($classes);
 
-            // 2. Create options
-            $this->optionRepo->set('siteurl', 'http://localhost:8080');
-            $this->optionRepo->set('home', 'http://localhost:8080');
-            $this->optionRepo->set('blogname', $siteTitle);
-            $this->optionRepo->set('admin_email', $adminEmail);
-            $this->optionRepo->set('posts_per_page', 10);
-            $this->optionRepo->set('active_plugins', []);
-            $this->optionRepo->set('template', 'tusk-modern');
-            $this->optionRepo->set('stylesheet', 'tusk-modern');
+            return $this->em->wrapInTransaction(function () use ($siteTitle, $adminUser, $adminPass, $adminEmail): ResponseInterface {
+                // Schema DDL is outside this transaction (MySQL implicitly commits DDL).
+                // Settings, administrator, and completion marker commit together.
+                $this->optionRepo->set('home', 'http://localhost:8080');
+                $this->optionRepo->set('blogname', $siteTitle);
+                $this->optionRepo->set('admin_email', $adminEmail);
+                $this->optionRepo->set('posts_per_page', 10);
+                $this->optionRepo->set('active_plugins', []);
+                $this->optionRepo->set('template', 'tusk-modern');
+                $this->optionRepo->set('stylesheet', 'tusk-modern');
 
-            // 3. Create initial admin user
-            $user = User::create(
-                id: new UserId(1),
-                login: $adminUser,
-                email: $adminEmail,
-                displayName: ucfirst($adminUser),
-                role: UserRole::Administrator,
-                plainPassword: $adminPass
-            );
+                // 3. Create initial admin user
+                $user = User::create(
+                    id: new UserId(1),
+                    login: $adminUser,
+                    email: $adminEmail,
+                    displayName: ucfirst($adminUser),
+                    role: UserRole::Administrator,
+                    plainPassword: $adminPass
+                );
 
-            $this->em->persist($user);
-            $this->em->flush();
+                $this->em->persist($user);
+                $this->em->flush();
+                $this->optionRepo->set('siteurl', 'http://localhost:8080');
 
-            return Response::redirect('/wp-login');
+                return Response::redirect('/wp-login');
+            });
 
         } catch (\Throwable $e) {
             $html = <<<HTML
@@ -187,6 +205,8 @@ class InstallController
             </html>
             HTML;
             return Response::html($html, 500);
+        } finally {
+            $lock->release();
         }
     }
 }
