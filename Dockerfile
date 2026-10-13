@@ -12,7 +12,7 @@ COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends libonig-dev \
-    && docker-php-ext-install -j"$(nproc)" mbstring pdo_mysql \
+    && docker-php-ext-install -j"$(nproc)" mbstring pdo_mysql sockets \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

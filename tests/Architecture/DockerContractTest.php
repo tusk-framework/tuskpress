@@ -41,6 +41,14 @@ final class DockerContractTest extends TestCase
         self::assertStringNotContainsString('tusk", "start", "worker.php', $dockerfile);
     }
 
+    public function test_dockerfile_installs_sockets_for_locked_composer_dependencies(): void
+    {
+        $dockerfile = file_get_contents($this->root.'/Dockerfile');
+
+        self::assertIsString($dockerfile);
+        self::assertStringContainsString('docker-php-ext-install -j"$(nproc)" mbstring pdo_mysql sockets', $dockerfile);
+    }
+
     public function test_compose_does_not_bind_mount_over_vendor(): void
     {
         $compose = file_get_contents($this->root.'/docker-compose.yml');
