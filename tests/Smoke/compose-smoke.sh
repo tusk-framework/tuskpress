@@ -75,19 +75,14 @@ install_status="$(curl --silent --show-error --output /dev/null --cookie-jar "$c
     --write-out '%{http_code}')"
 [[ "$install_status" == "302" ]]
 
-login_status="$(curl --silent --show-error --output /dev/null --cookie "$cookie_file" --cookie-jar "$cookie_file" \
+login_result="$(curl --silent --show-error --output /dev/null --cookie "$cookie_file" --cookie-jar "$cookie_file" \
     --data-urlencode "log=${admin_user}" \
     --data-urlencode "pwd=${admin_password}" \
     --data-urlencode 'redirect_to=/wp-admin' \
     http://127.0.0.1:8080/wp-login \
-    --write-out '%{http_code}')"
+    --write-out '%{http_code}\n%{redirect_url}')"
+read -r login_status login_location <<< "$login_result"
 [[ "$login_status" == "302" ]]
-login_location="$(curl --silent --show-error --output /dev/null --cookie "$cookie_file" \
-    --data-urlencode "log=${admin_user}" \
-    --data-urlencode "pwd=${admin_password}" \
-    --data-urlencode 'redirect_to=/wp-admin' \
-    http://127.0.0.1:8080/wp-login \
-    --write-out '%{redirect_url}')"
 [[ "$login_location" == "http://127.0.0.1:8080/wp-admin" ]]
 
 admin_response="$(curl --silent --show-error --fail --cookie "$cookie_file" http://127.0.0.1:8080/wp-admin)"
