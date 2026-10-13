@@ -49,6 +49,14 @@ final class DockerContractTest extends TestCase
         self::assertStringContainsString('docker-php-ext-install -j"$(nproc)" mbstring pdo_mysql sockets', $dockerfile);
     }
 
+    public function test_dockerfile_installs_archive_extractor_for_composer_dist_archives(): void
+    {
+        $dockerfile = file_get_contents($this->root.'/Dockerfile');
+
+        self::assertIsString($dockerfile);
+        self::assertStringContainsString('apt-get install -y --no-install-recommends libonig-dev unzip', $dockerfile);
+    }
+
     public function test_compose_does_not_bind_mount_over_vendor(): void
     {
         $compose = file_get_contents($this->root.'/docker-compose.yml');

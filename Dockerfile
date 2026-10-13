@@ -11,7 +11,7 @@ COPY --from=roadrunner /usr/bin/rr /usr/bin/rr
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libonig-dev \
+    && apt-get install -y --no-install-recommends libonig-dev unzip \
     && docker-php-ext-install -j"$(nproc)" mbstring pdo_mysql sockets \
     && rm -rf /var/lib/apt/lists/*
 
