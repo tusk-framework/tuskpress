@@ -25,7 +25,7 @@ use TuskPress\Infrastructure\Persistence\MySqlCommentRepository;
  * AdminDashboardController — Painel principal do WordPress.
  * URL: /wp-admin/
  */
-#[Service]
+#[Service(scope: 'request')]
 #[Authenticated]
 #[Controller]
 class AdminDashboardController

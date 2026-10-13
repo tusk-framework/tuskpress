@@ -16,7 +16,7 @@ use TuskPress\Domain\User\User;
 use TuskPress\Domain\User\UserId;
 use TuskPress\Domain\User\UserRole;
 
-#[Service]
+#[Service(scope: 'request')]
 #[Authenticated]
 #[Controller]
 class AdminUserController

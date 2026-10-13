@@ -16,6 +16,20 @@ final class ApplicationBootstrapTest extends TestCase
         self::assertInstanceOf(Application::class, $application);
     }
 
+    public function test_front_controller_builds_a_psr_request_and_emits_application_response(): void
+    {
+        $frontController = file_get_contents(dirname(__DIR__, 2).'/public/index.php');
+
+        self::assertIsString($frontController);
+        self::assertStringContainsString("'/bootstrap/app.php'", $frontController);
+        self::assertStringContainsString('->fromGlobals()', $frontController);
+        self::assertStringContainsString('$application->handle($request)', $frontController);
+        self::assertStringContainsString('$response->getStatusCode()', $frontController);
+        self::assertStringContainsString('$response->getHeaders()', $frontController);
+        self::assertStringContainsString('$response->getBody()', $frontController);
+        self::assertStringNotContainsString('HttpKernel', $frontController);
+    }
+
     public function test_health_route_is_available_without_database_tables(): void
     {
         $application = require dirname(__DIR__, 2).'/bootstrap/app.php';

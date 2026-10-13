@@ -18,19 +18,19 @@ use TuskPress\Http\Middleware\CsrfMiddleware;
 use TuskPress\Http\Middleware\ExceptionMiddleware;
 use TuskPress\Http\Middleware\InstallCheckMiddleware;
 use TuskPress\Http\Middleware\SessionMiddleware;
+use TuskPress\Http\Middleware\RequestScopedSecurityMiddleware;
 use TuskPress\Infrastructure\Database\EntityManagerFactory;
 use TuskPress\Infrastructure\Health\DatabaseHealthCheck;
 use TuskPress\Infrastructure\Persistence\MySqlUserRepository;
 use TuskPress\Infrastructure\Persistence\MySqlOptionRepository;
-use TuskPress\Security\SessionGuard;
 
 return static function (Container $container): void {
     $source = dirname(__DIR__).'/src';
     foreach ((new ServiceScanner())->scan([$source]) as $definition) {
         $container->register($definition['class'], $definition['scope']);
     }
-    $container->register(\Tusk\Security\Middleware\SecurityMiddleware::class, 'singleton');
-    $container->register(\Tusk\Security\Authorization\Gate::class, 'singleton');
+    $container->register(RequestScopedSecurityMiddleware::class, 'request');
+    $container->register(\Tusk\Security\Authorization\Gate::class, 'request');
 
     $container->register(EntityManagerFactory::class, 'singleton');
     $entityManager = $container->get(EntityManagerFactory::class)();
@@ -38,7 +38,6 @@ return static function (Container $container): void {
     $container->instance(ListenerProviderInterface::class, new ListenerProvider($container));
     $container->instance(EventDispatcherInterface::class, new EventDispatcher($container->get(ListenerProviderInterface::class)));
     $container->instance(UserProviderInterface::class, $container->get(MySqlUserRepository::class));
-    $container->instance(\Tusk\Security\Contract\GuardInterface::class, $container->get(SessionGuard::class));
 
     $container->register(DatabaseHealthCheck::class, 'singleton');
     $healthCheck = $container->get(DatabaseHealthCheck::class);
@@ -50,7 +49,7 @@ return static function (Container $container): void {
     $kernel->addMiddleware(InstallCheckMiddleware::class);
     $kernel->addMiddleware(SessionMiddleware::class);
     $kernel->addMiddleware(CsrfMiddleware::class);
-    $kernel->addMiddleware(\Tusk\Security\Middleware\SecurityMiddleware::class);
+    $kernel->addMiddleware(RequestScopedSecurityMiddleware::class);
     $kernel->addMiddleware(ApiAuthMiddleware::class);
 
     $optionRepository = $container->get(MySqlOptionRepository::class);

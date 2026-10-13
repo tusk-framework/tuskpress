@@ -18,7 +18,7 @@ use TuskPress\Security\SessionGuard;
  * AdminAuthController — Admin panel login and logout.
  * Keeps /wp-admin/ and /wp-login URLs for compatibility.
  */
-#[Service]
+#[Service(scope: 'request')]
 #[Controller]
 class AdminAuthController
 {

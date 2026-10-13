@@ -12,7 +12,7 @@ use Tusk\Web\Attribute\Route;
 use Tusk\Web\Attribute\Controller;
 use Tusk\Web\Http\Request;
 use Tusk\Web\Http\Response;
-#[Service]
+#[Service(scope: 'request')]
 #[Authenticated]
 #[Controller]
 class AdminSettingsController {

@@ -14,7 +14,7 @@ use Tusk\Web\Http\Response;
 use TuskPress\Plugin\PluginManager;
 use TuskPress\Infrastructure\Persistence\MySqlOptionRepository;
 
-#[Service]
+#[Service(scope: 'request')]
 #[Authenticated]
 #[Controller]
 class AdminPluginController {

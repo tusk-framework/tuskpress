@@ -21,7 +21,7 @@ use TuskPress\Infrastructure\Persistence\MySqlOptionRepository;
 use TuskPress\Infrastructure\Persistence\MySqlPostRepository;
 use TuskPress\Domain\User\UserId;
 
-#[Service]
+#[Service(scope: 'request')]
 #[Authenticated]
 #[Controller]
 class AdminMediaController

@@ -26,7 +26,7 @@ use TuskPress\Infrastructure\Persistence\MySqlPostRepository;
  * AdminPostController — CRUD de posts no painel admin.
  * Mantém URLs compatíveis com WordPress (/wp-admin/edit, /wp-admin/post-new, etc.)
  */
-#[Service]
+#[Service(scope: 'request')]
 #[Authenticated]
 #[Controller]
 class AdminPostController
