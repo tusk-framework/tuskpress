@@ -94,7 +94,7 @@ final class DockerContractTest extends TestCase
         self::assertIsString($smoke);
         self::assertStringContainsString('--data-urlencode "log=${admin_user}"', $smoke);
         self::assertStringContainsString('--data-urlencode "pwd=${admin_password}"', $smoke);
-        self::assertStringContainsString("--data-urlencode 'redirect_to=/wp-admin'", $smoke);
+        self::assertStringContainsString("--data-urlencode 'redirect_to=wp-admin'", $smoke);
         self::assertStringContainsString('[[ "$login_status" == "302" ]]', $smoke);
         self::assertStringContainsString('[[ "$login_location" == "http://127.0.0.1:8080/wp-admin" ]]', $smoke);
         self::assertStringContainsString('--cookie "$cookie_file" --cookie-jar "$cookie_file"', $smoke);

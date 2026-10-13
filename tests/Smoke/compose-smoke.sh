@@ -82,7 +82,7 @@ install_status="$(curl --silent --show-error --output /dev/null --cookie-jar "$c
 login_result="$(curl --silent --show-error --output /dev/null --cookie "$cookie_file" --cookie-jar "$cookie_file" \
     --data-urlencode "log=${admin_user}" \
     --data-urlencode "pwd=${admin_password}" \
-    --data-urlencode 'redirect_to=/wp-admin' \
+    --data-urlencode 'redirect_to=wp-admin' \
     http://127.0.0.1:8080/wp-login \
     --write-out '%{http_code}|%{redirect_url}')"
 IFS='|' read -r login_status login_location <<< "$login_result"
