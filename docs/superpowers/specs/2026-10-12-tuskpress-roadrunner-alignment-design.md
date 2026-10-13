@@ -12,6 +12,11 @@ from its documented local/container workflow.
 - `bootstrap/app.php` constructs a legacy compiled container and returns a
   `HttpKernel`, while the current Engine requires it to return a configured
   `Tusk\Foundation\Application`.
+- `composer.json` still requires the legacy `tusk/framework:*` identity and
+  `composer.lock` resolves Framework from mutable `dev-main`, rather than the
+  published `tusk-framework/framework` package.
+- TuskPress route classes declare `#[Route]` methods but lack the Framework's
+  class-level `#[Controller]` attribute required for automatic route discovery.
 - Root `worker.php` starts the retired native NDJSON runtime. The Engine now
   owns the generated `.tusk/runtime/worker.php` and RoadRunner lifecycle.
 - The Dockerfile copies an untracked local Engine binary, ignores Composer
@@ -21,6 +26,11 @@ from its documented local/container workflow.
   database initialization that must be checked against the installer and SQL
   setup before being documented as supported behavior.
 - The project has no tracked automated test suite or Docker smoke workflow.
+- `CsrfMiddleware::process()` currently delegates every request unchanged, so
+  the existing middleware wiring is not actual CSRF protection.
+- The Framework `SecurityMiddleware` is a singleton by default but retains a
+  request-scoped `GuardInterface`; TuskPress must avoid reusing its
+  authentication state across requests.
 
 ## Target design
 
@@ -32,13 +42,19 @@ the bootstrap, creates private generated worker state, and supervises
 RoadRunner. RoadRunner remains the HTTP server, IPC boundary, pool manager, and
 worker recycler.
 
-The container must build reproducibly from declared inputs: a versioned Tusk
-Engine image, Composer-installed locked dependencies with real platform
+Composer must use the published `tusk-framework/framework` package with a
+stable compatible version constraint and lock the selected release. Remove
+the project-specific VCS override and development stability requirement if no
+other dependency needs them. The container must build reproducibly from
+declared inputs: a versioned Tusk Engine image, a versioned official
+RoadRunner binary, Composer-installed locked dependencies with real platform
 requirements, PHP extensions required by `composer.json` and the database
 driver, and an explicitly provisioned compatible RoadRunner executable. No
 host-built binary is copied into the image, and no platform requirements are
 ignored. Compose must wait for MySQL health before starting the app and must
 use non-empty, configurable credentials rather than an empty root password.
+Use MySQL 8.4 LTS for the Compose example; MySQL 8.0 reached end of life in
+April 2026.
 
 Documentation should state what TuskPress is and is not, explain why the
 long-lived RoadRunner lifecycle matters, list prerequisites and exact setup
@@ -73,10 +89,14 @@ limited to behavior that the code and smoke tests demonstrate.
   RoadRunner or a request loop itself.
 - The root application has no hand-authored `worker.php`; `tusk start` creates
   and cleans Engine-owned `.tusk/runtime/worker.php`.
-- Existing CMS routes, authentication/CSRF middleware, plugin/theme loading,
-  database persistence, and initial installation remain functional.
+- Existing CMS routes, authentication middleware, plugin/theme loading,
+  database persistence, and initial installation remain functional. Do not
+  describe the current CSRF no-op as protection; track real CSRF protection
+  separately rather than representing the CMS as production-secure.
 - `composer install --no-dev --optimize-autoloader` succeeds without
   `--ignore-platform-reqs` in the production image.
+- Composer resolves `tusk-framework/framework` from its published stable
+  release and the lockfile does not depend on `dev-main`.
 - The container uses a RoadRunner binary compatible with the Framework SDK and
   the Engine's projected config; no untracked local binary is needed.
 - Compose reports the app healthy only after RoadRunner and the application
@@ -93,8 +113,8 @@ limited to behavior that the code and smoke tests demonstrate.
   contracts; do not add a parallel container/runtime in TuskPress.
 - The Engine image currently provides PHP and the Tusk binary but not
   Composer, a database-specific PHP extension, or RoadRunner. Image
-  composition must pin compatible versions and verify RoadRunner acquisition
-  without relying on a mutable `latest` binary download.
+  composition must pin compatible versions and use RoadRunner's official
+  versioned image/binary rather than a mutable `latest` download.
 - Repository source is GPL-2.0-or-later. Describe TuskPress as inspired by
   WordPress, not as redistribution of WordPress, unless provenance review
   proves otherwise.
