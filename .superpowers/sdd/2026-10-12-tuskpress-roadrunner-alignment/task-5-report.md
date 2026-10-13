@@ -42,3 +42,31 @@ The requested README, CI, Composer, and contract changes are in scope. The full 
 - Confirmed `.env.example` values satisfy Compose interpolation and are described as local development values. README cleanup instructions distinguish preserving volumes from deleting them.
 - Confirmed the CSRF text states the middleware does not protect forms and points to the already approved issue.
 - `git diff --check` reports no whitespace errors.
+
+## Fix round 1 — Make smoke prerequisites explicit
+
+### Changes
+
+- Added `sockets` to both setup-php extension lists so Composer has the locked RoadRunner/Goridge platform extension in matrix and smoke jobs.
+- Added a smoke-job preflight before `composer test:smoke` that checks the Docker daemon, Compose plugin, curl, PHP CLI, `seq`, and `sleep`, with a clear failure message for each unavailable prerequisite. Workflow permissions remain read-only.
+- Clarified the README host prerequisites for `composer test:smoke`, including Bash, Docker daemon/Compose, curl, PHP CLI, `seq`, and `sleep`, while retaining that normal Docker app startup needs no host PHP or Composer.
+- Extended architecture contracts for both PHP extension lists, smoke preflight checks, and README utility prerequisites.
+
+### RED/GREEN and verification
+
+- Focused contract tests before workflow/README edits: RED (2 tests; 2 failures) for the missing CI extension/preflight and README requirements.
+- Focused contract tests after edits: GREEN (2 tests, 30 assertions).
+- `composer test`: passed (27 tests, 127 assertions).
+- `composer validate --strict`: passed (`./composer.json is valid`).
+- Docker smoke was not rerun in this fix round as directed. The user reports that `composer test:smoke` now passes when invoked through Git Bash, including build, install, login, admin verification, and cleanup.
+- The user also reproduced host `composer install` failing because local PHP 8.5 lacks `ext-fileinfo`. CI already requests `fileinfo` in setup-php; this is a local environment prerequisite, not a workflow defect.
+
+### Self-review
+
+- Changes are limited to README, CI workflow, architecture contract tests, and this report. Runtime, Docker, Compose, and smoke script files are unchanged.
+- The PHP 8.2/8.5 matrix remains intact and the workflow still grants only `contents: read`.
+- The preflight runs before the smoke command and checks all requested host tools without attempting to install or alter them.
+
+### Fix-round commit
+
+`ci: verify Compose smoke prerequisites`

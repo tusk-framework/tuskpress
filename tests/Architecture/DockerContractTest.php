@@ -27,6 +27,13 @@ final class DockerContractTest extends TestCase
         self::assertStringContainsString('RoadRunner', $readme);
         self::assertStringContainsString('GPL-2.0-or-later', $readme);
         self::assertStringContainsString('https://github.com/tusk-framework/tuskpress/issues/1', $readme);
+        self::assertStringContainsString('composer test:smoke', $readme);
+        self::assertStringContainsString('Bash', $readme);
+        self::assertStringContainsString('Docker daemon with the Compose plugin', $readme);
+        self::assertStringContainsString('curl', $readme);
+        self::assertStringContainsString('PHP CLI', $readme);
+        self::assertStringContainsString('`seq`', $readme);
+        self::assertStringContainsString('`sleep`', $readme);
         self::assertDoesNotMatchRegularExpression('/auto[- ]generated credentials/i', $readme);
         self::assertDoesNotMatchRegularExpression('/WordPress (?:source[- ]code )?fork/i', $readme);
         self::assertDoesNotMatchRegularExpression('/(?:starts?|loads?|runs?|entry point|powered by)\s+(?:the\s+)?(?:root\s+)?worker\.php|(?:serializes?|injects?)\s+requests?\s+(?:as\s+)?NDJSON/i', $readme);

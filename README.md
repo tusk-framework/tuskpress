@@ -60,7 +60,7 @@ composer test
 composer analyse
 ```
 
-The Docker image is based on PHP 8.3 and installs `mbstring`, `pdo_mysql`, and `sockets`. The local unit and architecture test suite does not require a host database. To run the full Compose smoke check locally, use Bash, Docker Compose, curl, and PHP CLI; run `composer test:smoke`.
+The Docker image is based on PHP 8.3 and installs `mbstring`, `pdo_mysql`, and `sockets`. The local unit and architecture test suite does not require a host database. To run the full Compose smoke check locally, use Bash, a working Docker daemon with the Compose plugin, curl, PHP CLI, and the standard shell utilities `seq` and `sleep`; run `composer test:smoke`. Normal Docker app startup above does not require PHP or Composer on the host.
 
 ## License
 

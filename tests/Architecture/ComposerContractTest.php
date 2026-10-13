@@ -17,9 +17,13 @@ final class ComposerContractTest extends TestCase
         self::assertIsString($workflow);
         self::assertStringContainsString("permissions:\n  contents: read", $workflow);
         self::assertStringContainsString("php: ['8.2', '8.5']", $workflow);
+        self::assertStringContainsString('extensions: fileinfo, mbstring, pdo_mysql, sockets', $workflow);
         self::assertMatchesRegularExpression('/smoke:\n(?:(?!\n  [a-zA-Z0-9_-]+:).)*needs: test/s', $workflow);
         self::assertMatchesRegularExpression('/smoke:\n(?:(?!\n  [a-zA-Z0-9_-]+:).)*runs-on: ubuntu-latest/s', $workflow);
         self::assertMatchesRegularExpression('/smoke:\n(?:(?!\n  [a-zA-Z0-9_-]+:).)*MYSQL_DATABASE:\s*\S+.*MYSQL_USER:\s*\S+.*MYSQL_PASSWORD:\s*\S+.*MYSQL_ROOT_PASSWORD:\s*\S+/s', $workflow);
+        self::assertSame(2, preg_match_all('/extensions: fileinfo, mbstring, pdo_mysql, sockets/', $workflow));
+        self::assertMatchesRegularExpression('/- name: Check Docker Compose smoke prerequisites\n\s+run: \|\n(?:(?!\n      - name:).)*(?:docker info)(?:(?!\n      - name:).)*(?:docker compose version)(?:(?!\n      - name:).)*(?:curl --version)(?:(?!\n      - name:).)*(?:php --version)(?:(?!\n      - name:).)*(?:command -v seq)(?:(?!\n      - name:).)*(?:command -v sleep)/s', $workflow);
+        self::assertMatchesRegularExpression('/Check Docker Compose smoke prerequisites.*?composer test:smoke/s', $workflow);
         self::assertStringContainsString('composer test:smoke', $workflow);
         self::assertSame('bash tests/Smoke/compose-smoke.sh', $manifest['scripts']['test:smoke'] ?? null);
     }
