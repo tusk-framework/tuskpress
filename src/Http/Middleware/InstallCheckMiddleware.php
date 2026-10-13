@@ -19,7 +19,13 @@ class InstallCheckMiddleware implements MiddlewareInterface
 
     public function process(Request $request, RequestHandlerInterface $handler): Response
     {
-        if (in_array($request->getUri()->getPath(), ['/wp-admin/install.php', '/healthz'], true)) {
+        $path = $request->getUri()->getPath();
+
+        if ($request->getMethod() === 'GET' && $path === '/wp-admin/') {
+            return TuskResponse::redirect('/wp-admin');
+        }
+
+        if (in_array($path, ['/wp-admin/install.php', '/healthz'], true)) {
             return $handler->handle($request);
         }
 

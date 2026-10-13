@@ -21,6 +21,7 @@ use TuskPress\Http\Middleware\SessionMiddleware;
 use TuskPress\Infrastructure\Database\EntityManagerFactory;
 use TuskPress\Infrastructure\Health\DatabaseHealthCheck;
 use TuskPress\Infrastructure\Persistence\MySqlUserRepository;
+use TuskPress\Infrastructure\Persistence\MySqlOptionRepository;
 use TuskPress\Security\SessionGuard;
 
 return static function (Container $container): void {
@@ -52,13 +53,24 @@ return static function (Container $container): void {
     $kernel->addMiddleware(\Tusk\Security\Middleware\SecurityMiddleware::class);
     $kernel->addMiddleware(ApiAuthMiddleware::class);
 
+    $optionRepository = $container->get(MySqlOptionRepository::class);
     try {
-        $optionRepository = $container->get(\TuskPress\Infrastructure\Persistence\MySqlOptionRepository::class);
-        $container->get(\TuskPress\Plugin\PluginManager::class)->loadPlugins($optionRepository->get('active_plugins', []));
-        $container->get(\TuskPress\Theme\ThemeLoader::class)->loadActiveTheme();
-    } catch (\Throwable $exception) {
+        $activePlugins = $optionRepository->get('active_plugins', []);
+    } catch (\Doctrine\DBAL\Exception|\PDOException $exception) {
         if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('[TuskPress] Plugin/Theme loading failed: '.$exception->getMessage());
+            error_log('[TuskPress] Unable to load active plugins before installation: '.$exception->getMessage());
         }
+        $activePlugins = [];
     }
+
+    $container->get(\TuskPress\Plugin\PluginManager::class)->loadPlugins($activePlugins);
+    try {
+        $activeTheme = $optionRepository->get('template', 'twentytwentyfour');
+    } catch (\Doctrine\DBAL\Exception|\PDOException $exception) {
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            error_log('[TuskPress] Unable to load active theme before installation: '.$exception->getMessage());
+        }
+        $activeTheme = 'twentytwentyfour';
+    }
+    $container->get(\TuskPress\Theme\ThemeLoader::class)->loadTheme($activeTheme);
 };

@@ -81,3 +81,56 @@ Also verified PHP syntax for bootstrap, provider, architecture tests, and contro
 ## Commit
 
 Required subject: `refactor: compose TuskPress with the Framework application`.
+
+## Round 1 review fixes (2026-10-13)
+
+### TDD evidence
+
+Updated the regression tests first, then ran:
+
+```text
+vendor/bin/phpunit --configuration phpunit.xml --process-isolation tests/Architecture/ApplicationBootstrapTest.php
+```
+
+Red output against the reviewed production code:
+
+```text
+...F....
+Tests: 8, Assertions: 23, Failures: 1.
+```
+
+The failure was the exact legacy admin path assertion: expected `Location: /wp-admin`, received `Location: /wp-admin/install.php`. The other new assertions passed, including the install route match and schema-less install form rendering.
+
+After production fixes, the focused command passed:
+
+```text
+OK (8 tests, 23 assertions)
+```
+
+Then `composer test` passed:
+
+```text
+OK (9 tests, 29 assertions)
+```
+
+### Changes and review notes
+
+- GET `/wp-admin/` now redirects to `/wp-admin` before install-state checks; the test asserts both status `302` and exact `Location`.
+- Route existence tests now use the registered `RouterInterface::match()` for frontend, admin, API, and install routes. The installer request also proves the schema-less form renders with status `200` and `TuskPress Installation` in its body.
+- Collision tests use a random per-test fixture directory, assert directory creation and complete source write, and only remove their own file/directory. Cleanup is protected around setup and app creation; only the expected duplicate-route `RuntimeException` is treated as success.
+- Provider DB tolerance is limited to the two `MySqlOptionRepository::get()` calls for active plugins and active theme. It catches Doctrine DBAL exceptions and raw `PDOException` from metadata/driver lookup, falls back to empty plugins and the default theme, then runs plugin loading and theme file loading outside the catches so those failures are not swallowed. `ThemeLoader::loadTheme()` separates DB lookup from file initialization.
+- The no-initialized-schema behavior is tested through application construction and by requesting the installation form; the form’s controller intentionally handles schema lookup failure and still renders.
+- Authentication trace: Framework `HttpKernel::handle()` matches the route and attaches `_controller` and `_action` before building/running middleware. Framework `SecurityMiddleware::process()` reads these attributes and calls its attribute check, enforcing controller/method `#[Authenticated]`. No extra auth implementation was needed.
+- Review changes did not add request scopes, worker removal, front-controller changes, or runtime ownership behavior.
+
+### Round 1 files
+
+- `bootstrap/providers.php`
+- `src/Http/Middleware/InstallCheckMiddleware.php`
+- `src/Theme/ThemeLoader.php`
+- `tests/Architecture/ApplicationBootstrapTest.php`
+- `.superpowers/sdd/2026-10-12-tuskpress-roadrunner-alignment/task-2-report.md`
+
+### Environment
+
+Git Bash startup remains unavailable; commands were run with PowerShell. No agents were dispatched and nothing was pushed.
