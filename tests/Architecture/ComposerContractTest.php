@@ -24,6 +24,7 @@ final class ComposerContractTest extends TestCase
         self::assertSame(2, preg_match_all('/extensions: fileinfo, mbstring, pdo_mysql,(?: pdo_sqlite,)? sockets/', $workflow));
         self::assertStringContainsString('actions/upload-artifact@v4', $workflow);
         self::assertStringContainsString('if: always()', $workflow);
+        self::assertMatchesRegularExpression('/- name: Run Docker Compose smoke test\n\s+env:\n\s+TUSKPRESS_SMOKE_LOG_DIR: \$\{\{ runner\.temp \}\}\/tuskpress-smoke-logs\n\s+run: composer test:smoke/', $workflow);
         self::assertMatchesRegularExpression('/- name: Check Docker Compose smoke prerequisites\n\s+run: \|\n(?:(?!\n      - name:).)*(?:docker info)(?:(?!\n      - name:).)*(?:docker compose version)(?:(?!\n      - name:).)*(?:curl --version)(?:(?!\n      - name:).)*(?:php --version)(?:(?!\n      - name:).)*(?:command -v seq)(?:(?!\n      - name:).)*(?:command -v sleep)/s', $workflow);
         self::assertMatchesRegularExpression('/Check Docker Compose smoke prerequisites.*?composer test:smoke/s', $workflow);
         self::assertStringContainsString('composer test:smoke', $workflow);

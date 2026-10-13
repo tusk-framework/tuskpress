@@ -47,7 +47,6 @@ jobs:
       MYSQL_USER: tuskpress_ci
       MYSQL_PASSWORD: ci-smoke-password
       MYSQL_ROOT_PASSWORD: ci-smoke-root-password
-      TUSKPRESS_SMOKE_LOG_DIR: ${{ runner.temp }}/tuskpress-smoke-logs
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -73,6 +72,8 @@ jobs:
           command -v sleep >/dev/null || { echo "sleep is unavailable" >&2; exit 1; }
 
       - name: Run Docker Compose smoke test
+        env:
+          TUSKPRESS_SMOKE_LOG_DIR: ${{ runner.temp }}/tuskpress-smoke-logs
         run: composer test:smoke
 
       - name: Retain Docker Compose smoke diagnostics
