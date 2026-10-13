@@ -216,7 +216,13 @@ class User implements UserInterface
         string   $plainPassword,
     ): self {
         $nicename = mb_strtolower($login, 'UTF-8');
-        $nicename = preg_replace('/[^\p{L}\p{N}]+/u', '-', $nicename) ?? '';
+        $normalizedNicename = preg_replace('/[^\p{L}\p{N}]+/u', '-', $nicename);
+        if ($normalizedNicename === null) {
+            $asciiLogin = strtolower($login);
+            $nicename = preg_replace('/[^a-z0-9]+/', '-', $asciiLogin) ?? '';
+        } else {
+            $nicename = $normalizedNicename;
+        }
         $nicename = trim($nicename, '-');
 
         return new self(
