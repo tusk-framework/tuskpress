@@ -34,7 +34,7 @@ final class DockerContractTest extends TestCase
         self::assertStringContainsString('PHP CLI', $readme);
         self::assertStringContainsString('`seq`', $readme);
         self::assertStringContainsString('`sleep`', $readme);
-        self::assertMatchesRegularExpression('/PHP extensions required by the project: `fileinfo`, `json`, `mbstring`, `sockets`, and PDO \(with the MySQL PDO driver for database-backed workflows\)/', $readme);
+        self::assertMatchesRegularExpression('/PHP extensions required by the project: `fileinfo`, `json`, `mbstring`, `sockets`, and PDO \(with `pdo_sqlite` for the ORM regression tests and the MySQL PDO driver for database-backed workflows\)/', $readme);
         self::assertDoesNotMatchRegularExpression('/auto[- ]generated credentials/i', $readme);
         self::assertDoesNotMatchRegularExpression('/WordPress (?:source[- ]code )?fork/i', $readme);
         self::assertDoesNotMatchRegularExpression('/(?:starts?|loads?|runs?|entry point|powered by)\s+(?:the\s+)?(?:root\s+)?worker\.php|(?:serializes?|injects?)\s+requests?\s+(?:as\s+)?NDJSON/i', $readme);
@@ -131,7 +131,7 @@ final class DockerContractTest extends TestCase
         $smoke = file_get_contents($this->root.'/tests/Smoke/compose-smoke.sh');
 
         self::assertIsString($smoke);
-        self::assertSame(1, preg_match_all('/http:\/\/127\.0\.0\.1:8080\/wp-login/', $smoke));
+        self::assertSame(1, preg_match_all('/\n\s+http:\/\/127\.0\.0\.1:8080\/wp-login\s+\\\\/', $smoke));
         self::assertStringContainsString('login_result="$(curl --silent --show-error --output /dev/null --cookie "$cookie_file" --cookie-jar "$cookie_file"', $smoke);
         self::assertStringContainsString("--write-out '%{http_code}|%{redirect_url}'", $smoke);
         self::assertStringContainsString("IFS='|' read -r login_status login_location <<< \"\$login_result\"", $smoke);

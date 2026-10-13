@@ -52,7 +52,7 @@ The application uses Tusk Framework controllers, routing, middleware, and depend
 
 ## Local development
 
-For local tests and static analysis, install PHP 8.2 or newer, Composer 2, and the PHP extensions required by the project: `fileinfo`, `json`, `mbstring`, `sockets`, and PDO (with the MySQL PDO driver for database-backed workflows). Then install development dependencies and run the checks:
+For local tests and static analysis, install PHP 8.2 or newer, Composer 2, and the PHP extensions required by the project: `fileinfo`, `json`, `mbstring`, `sockets`, and PDO (with `pdo_sqlite` for the ORM regression tests and the MySQL PDO driver for database-backed workflows). Then install development dependencies and run the checks:
 
 ```bash
 composer install
@@ -60,7 +60,9 @@ composer test
 composer analyse
 ```
 
-The Docker image is based on PHP 8.3 and installs `mbstring`, `pdo_mysql`, and `sockets`. The local unit and architecture test suite does not require a host database. To run the full Compose smoke check locally, use Bash, a working Docker daemon with the Compose plugin, curl, PHP CLI, and the standard shell utilities `seq` and `sleep`; run `composer test:smoke`. Normal Docker app startup above does not require PHP or Composer on the host.
+The Docker image is based on PHP 8.3 and installs `mbstring`, `pdo_mysql`, and `sockets`. The local suite uses SQLite and does not require a host database server; its smoke-log regression uses Bash (Git Bash on Windows). `composer analyse` runs a regression gate against the [explicitly reviewed legacy PHPStan inventory](docs/superpowers/phpstan-reviewed-baseline.md); new findings and stale baseline entries fail CI.
+
+To run the full Compose smoke check locally, use Bash, a working Docker daemon with the Compose plugin, curl, PHP CLI, and the standard shell utilities `seq` and `sleep`; run `composer test:smoke`. Failure logs are printed before cleanup and retained under `${TMPDIR:-/tmp}/tuskpress-smoke-logs` (override with `TUSKPRESS_SMOKE_LOG_DIR`); CI also uploads them. Normal Docker app startup above does not require PHP or Composer on the host.
 
 ## License
 

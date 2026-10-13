@@ -35,7 +35,7 @@
     "scripts": {
         "test": "phpunit --configuration phpunit.xml",
         "test:smoke": "bash tests/Smoke/compose-smoke.sh",
-        "analyse": "phpstan analyse src --level=8",
+        "analyse": "phpstan analyse --configuration=phpstan.neon",
         "serve": "php -S localhost:8000 -t public"
     },
     "config": {

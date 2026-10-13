@@ -1,0 +1,445 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Property TuskPress\\Domain\\Option\\Option\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Domain/Option/Option.php
+
+		-
+			message: '#^Property TuskPress\\Domain\\Post\\Post\:\:\$meta type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Domain/Post/Post.php
+
+		-
+			message: '#^Property TuskPress\\Domain\\Post\\Post\:\:\$termIds type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Domain/Post/Post.php
+
+		-
+			message: '#^Parameter \#1 \$value of class TuskPress\\Domain\\User\\UserId constructor expects int, int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Domain/User/User.php
+
+		-
+			message: '#^Property TuskPress\\Domain\\User\\User\:\:\$meta type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Domain/User/User.php
+
+		-
+			message: '#^Method TuskPress\\Domain\\User\\UserRole\:\:can\(\) should return bool but returns string\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Domain/User/UserRole.php
+
+		-
+			message: '#^Method TuskPress\\Domain\\User\\UserRole\:\:capabilities\(\) should return array\<string\> but returns array\<string, bool\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Domain/User/UserRole.php
+
+		-
+			message: '#^Call to an undefined method Tusk\\Security\\Contract\\GuardInterface\:\:login\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Http/Controllers/Admin/AdminAuthController.php
+
+		-
+			message: '#^Call to an undefined method Tusk\\Security\\Contract\\GuardInterface\:\:logout\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Http/Controllers/Admin/AdminAuthController.php
+
+		-
+			message: '#^Cannot access offset ''log'' on array\|object\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Http/Controllers/Admin/AdminAuthController.php
+
+		-
+			message: '#^Cannot access offset ''pwd'' on array\|object\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Http/Controllers/Admin/AdminAuthController.php
+
+		-
+			message: '#^Cannot access offset ''redirect_to'' on array\|object\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Http/Controllers/Admin/AdminAuthController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Admin\\AdminAuthController\:\:login\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 4
+			path: src/Http/Controllers/Admin/AdminAuthController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Admin\\AdminAuthController\:\:loginForm\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 2
+			path: src/Http/Controllers/Admin/AdminAuthController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Admin\\AdminAuthController\:\:logout\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Http/Controllers/Admin/AdminAuthController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Admin\\AdminCommentController\:\:index\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 2
+			path: src/Http/Controllers/Admin/AdminCommentController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Admin\\AdminDashboardController\:\:index\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 2
+			path: src/Http/Controllers/Admin/AdminDashboardController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Admin\\AdminDashboardController\:\:renderDashboard\(\) has parameter \$recentPosts with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Http/Controllers/Admin/AdminDashboardController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Admin\\AdminDashboardController\:\:renderDashboard\(\) has parameter \$stats with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Http/Controllers/Admin/AdminDashboardController.php
+
+		-
+			message: '#^Property TuskPress\\Http\\Controllers\\Admin\\AdminDashboardController\:\:\$commentRepository is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Http/Controllers/Admin/AdminDashboardController.php
+
+		-
+			message: '#^Parameter \#1 \$path of function basename expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Http/Controllers/Admin/AdminMediaController.php
+
+		-
+			message: '#^Parameter \#1 \$value of class TuskPress\\Domain\\User\\UserId constructor expects int, int\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Http/Controllers/Admin/AdminMediaController.php
+
+		-
+			message: '#^Cannot access property \$value on TuskPress\\Domain\\Post\\PostId\|null\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: src/Http/Controllers/Admin/AdminPostController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Admin\\AdminPostController\:\:renderPostList\(\) has parameter \$counts with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Http/Controllers/Admin/AdminPostController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Admin\\AdminPostController\:\:renderPostList\(\) has parameter \$posts with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Http/Controllers/Admin/AdminPostController.php
+
+		-
+			message: '#^Parameter \#1 \$string of function trim expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Http/Controllers/Admin/AdminPostController.php
+
+		-
+			message: '#^Parameter \#1 \$value of class TuskPress\\Domain\\User\\UserId constructor expects int, int\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Http/Controllers/Admin/AdminPostController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>content" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/Http/Controllers/Admin/AdminPostController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Admin\\AdminSettingsController\:\:index\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 2
+			path: src/Http/Controllers/Admin/AdminSettingsController.php
+
+		-
+			message: '#^Cannot access offset ''theme'' on array\|object\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Http/Controllers/Admin/AdminThemeController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Admin\\AdminThemeController\:\:activate\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 2
+			path: src/Http/Controllers/Admin/AdminThemeController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Admin\\AdminThemeController\:\:customize\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 2
+			path: src/Http/Controllers/Admin/AdminThemeController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Admin\\AdminThemeController\:\:index\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 2
+			path: src/Http/Controllers/Admin/AdminThemeController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Admin\\AdminUserController\:\:create\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 3
+			path: src/Http/Controllers/Admin/AdminUserController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Admin\\AdminUserController\:\:delete\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 2
+			path: src/Http/Controllers/Admin/AdminUserController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Admin\\AdminUserController\:\:edit\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 4
+			path: src/Http/Controllers/Admin/AdminUserController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Admin\\AdminUserController\:\:index\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 2
+			path: src/Http/Controllers/Admin/AdminUserController.php
+
+		-
+			message: '#^Parameter \$id of static method TuskPress\\Domain\\User\\User\:\:create\(\) expects TuskPress\\Domain\\User\\UserId, null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Http/Controllers/Admin/AdminUserController.php
+
+		-
+			message: '#^Property TuskPress\\Http\\Controllers\\Admin\\InstallController\:\:\$eventDispatcher is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Http/Controllers/Admin/InstallController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Api\\ApiMediaController\:\:index\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Http/Controllers/Api/ApiMediaController.php
+
+		-
+			message: '#^Cannot access property \$value on TuskPress\\Domain\\Post\\PostId\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: src/Http/Controllers/Api/ApiPostController.php
+
+		-
+			message: '#^Cannot access property \$value on TuskPress\\Domain\\User\\UserId\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: src/Http/Controllers/Api/ApiPostController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Api\\ApiPostController\:\:formatPost\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Http/Controllers/Api/ApiPostController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Api\\ApiTermController\:\:index\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Http/Controllers/Api/ApiTermController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Api\\ApiUserController\:\:index\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Http/Controllers/Api/ApiUserController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Frontend\\FrontendController\:\:category\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Http/Controllers/Frontend/FrontendController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Frontend\\FrontendController\:\:home\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Http/Controllers/Frontend/FrontendController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Frontend\\FrontendController\:\:notFound\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Http/Controllers/Frontend/FrontendController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Frontend\\FrontendController\:\:renderStaticFrontPage\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Http/Controllers/Frontend/FrontendController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Frontend\\FrontendController\:\:search\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Http/Controllers/Frontend/FrontendController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Frontend\\FrontendController\:\:single\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Http/Controllers/Frontend/FrontendController.php
+
+		-
+			message: '#^Method TuskPress\\Http\\Controllers\\Frontend\\FrontendController\:\:tag\(\) should return Tusk\\Web\\Http\\Response but returns Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Http/Controllers/Frontend/FrontendController.php
+
+		-
+			message: '#^Method TuskPress\\Infrastructure\\Database\\Connection\:\:insert\(\) has parameter \$bindings with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Database/Connection.php
+
+		-
+			message: '#^Method TuskPress\\Infrastructure\\Database\\Connection\:\:scalar\(\) has parameter \$bindings with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Database/Connection.php
+
+		-
+			message: '#^Method TuskPress\\Infrastructure\\Database\\Connection\:\:select\(\) has parameter \$bindings with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Database/Connection.php
+
+		-
+			message: '#^Method TuskPress\\Infrastructure\\Database\\Connection\:\:selectOne\(\) has parameter \$bindings with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Database/Connection.php
+
+		-
+			message: '#^Method TuskPress\\Infrastructure\\Database\\Connection\:\:statement\(\) has parameter \$bindings with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Database/Connection.php
+
+		-
+			message: '#^Method TuskPress\\Infrastructure\\Persistence\\MySqlCommentRepository\:\:findAll\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Persistence/MySqlCommentRepository.php
+
+		-
+			message: '#^Method TuskPress\\Infrastructure\\Persistence\\MySqlMediaRepository\:\:findAll\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Persistence/MySqlMediaRepository.php
+
+		-
+			message: '#^Method TuskPress\\Infrastructure\\Persistence\\MySqlTermRepository\:\:findBySlug\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Persistence/MySqlTermRepository.php
+
+		-
+			message: '#^Method TuskPress\\Infrastructure\\Persistence\\MySqlTermRepository\:\:findByTaxonomy\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Persistence/MySqlTermRepository.php
+
+		-
+			message: '#^Method TuskPress\\Jobs\\PublishScheduledPostJob\:\:handle\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Jobs/PublishScheduledPostJob.php
+
+		-
+			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 2
+			path: src/Plugin/PluginManager.php
+
+		-
+			message: '#^Property TuskPress\\Plugin\\PluginManager\:\:\$hookBus is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Plugin/PluginManager.php
+
+		-
+			message: '#^Attribute class Tusk\\Contracts\\Attributes\\Factory does not have the method target\.$#'
+			identifier: attribute.target
+			count: 2
+			path: src/Security/AuthFactory.php
+
+		-
+			message: '#^Cannot access property \$value on TuskPress\\Domain\\Post\\PostId\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: src/Theme/ThemeEngine.php
+
+		-
+			message: '#^Constant WP_CONTENT_DIR not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: src/Theme/ThemeEngine.php
+
+		-
+			message: '#^Constant WP_CONTENT_URL not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: src/Theme/ThemeEngine.php
+
+		-
+			message: '#^Method TuskPress\\Theme\\ThemeEngine\:\:findTemplate\(\) has parameter \$candidates with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Theme/ThemeEngine.php
+
+		-
+			message: '#^Method TuskPress\\Theme\\ThemeEngine\:\:getThemeData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Theme/ThemeEngine.php
+
+		-
+			message: '#^Method TuskPress\\Theme\\ThemeEngine\:\:renderFallback\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Theme/ThemeEngine.php
+
+		-
+			message: '#^Parameter \#2 \$subject of function preg_match expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Theme/ThemeEngine.php
+
+		-
+			message: '#^Constant WP_CONTENT_DIR not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: src/Theme/ThemeLoader.php
+
+		-
+			message: '#^Property TuskPress\\Theme\\ThemeLoader\:\:\$hookBus is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Theme/ThemeLoader.php

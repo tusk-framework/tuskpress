@@ -6,7 +6,9 @@ run_id="$(date -u +%Y%m%d%H%M%S)-$$-${RANDOM}"
 project="tuskpress-smoke-${run_id}"
 project_pattern='^tuskpress-smoke-[0-9]{14}-[0-9]+-[0-9]+$'
 compose=(docker compose --project-name "$project" --file "$repo_root/docker-compose.yml" --env-file "$repo_root/.env.example")
-logs_file="${TMPDIR:-/tmp}/${project}.logs"
+logs_dir="${TUSKPRESS_SMOKE_LOG_DIR:-${TMPDIR:-/tmp}/tuskpress-smoke-logs}"
+mkdir -p "$logs_dir"
+logs_file="${logs_dir}/${project}.logs"
 cookie_file="${TMPDIR:-/tmp}/${project}.cookies"
 cleanup_armed=0
 
@@ -34,9 +36,11 @@ cleanup() {
         if (( exit_code != 0 )); then
             "${compose[@]}" logs --no-color >"$logs_file" 2>&1 || true
             printf 'Smoke failed; logs preserved at %s\n' "$logs_file" >&2
+            cat "$logs_file" >&2
         fi
-        "${compose[@]}" down --volumes --remove-orphans
+        "${compose[@]}" down --volumes --remove-orphans || exit_code=1
     fi
+    rm -f "$cookie_file"
     exit "$exit_code"
 }
 trap cleanup EXIT
@@ -67,6 +71,8 @@ wait_for_http http://127.0.0.1:8080/healthz
 installer="$(curl --silent --show-error --fail http://127.0.0.1:8080/wp-admin/install.php)"
 [[ "$installer" == *"TuskPress Installation"* ]]
 
+"${compose[@]}" exec -T web php < "$repo_root/tests/Smoke/mysql-install-lock.php"
+
 admin_user="smoke-${run_id}"
 admin_password="Smoke-${run_id}-Pass!"
 admin_email="${admin_user}@example.test"
@@ -78,6 +84,14 @@ install_status="$(curl --silent --show-error --output /dev/null --cookie-jar "$c
     http://127.0.0.1:8080/wp-admin/install.php \
     --write-out '%{http_code}')"
 [[ "$install_status" == "302" ]]
+
+repeat_install_status="$(curl --silent --show-error --output /dev/null \
+    --data-urlencode 'site_title=Must Not Replace Site' \
+    --data-urlencode 'admin_user=must-not-exist' \
+    --data-urlencode 'admin_pass=must-not-work' \
+    --data-urlencode 'admin_email=attacker@example.test' \
+    http://127.0.0.1:8080/wp-admin/install.php --write-out '%{http_code}')"
+[[ "$repeat_install_status" == "409" ]]
 
 login_result="$(curl --silent --show-error --output /dev/null --cookie "$cookie_file" --cookie-jar "$cookie_file" \
     --data-urlencode "log=${admin_user}" \
@@ -91,4 +105,11 @@ IFS='|' read -r login_status login_location <<< "$login_result"
 
 admin_response="$(curl --silent --show-error --fail --cookie "$cookie_file" http://127.0.0.1:8080/wp-admin)"
 [[ "$admin_response" == *"class=\"user-role\">Administrator"* ]]
-printf 'Smoke passed: healthz, installer, installation POST, login redirect, and authenticated admin dashboard.\n'
+[[ "$admin_response" == *"TuskPress Smoke"* ]]
+anonymous_result="$(curl --silent --show-error --output /dev/null http://127.0.0.1:8080/wp-admin --write-out '%{http_code}|%{redirect_url}')"
+[[ "$anonymous_result" == "302|http://127.0.0.1:8080/wp-login" ]]
+for render in 1 2; do
+    frontend="$(curl --silent --show-error --fail http://127.0.0.1:8080/)"
+    [[ "$frontend" == *'<header class="navbar">'* && "$frontend" == *'<footer class="site-footer">'* ]]
+done
+printf 'Smoke passed: healthz, concurrent-install lock, first installation, repeat POST rejection, login, authenticated/anonymous isolation, and repeated theme renders.\n'
