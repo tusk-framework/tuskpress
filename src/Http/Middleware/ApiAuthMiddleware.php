@@ -11,9 +11,11 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Tusk\Security\Authentication\JwtGuard;
+use Tusk\Web\Http\Request as TuskRequest;
+use Tusk\Web\Http\Response as TuskResponse;
 use TuskPress\Infrastructure\Persistence\MySqlUserRepository;
 
-#[Service]
+#[Service(scope: 'request')]
 class ApiAuthMiddleware implements MiddlewareInterface
 {
     public function __construct(
@@ -23,7 +25,7 @@ class ApiAuthMiddleware implements MiddlewareInterface
     public function process(Request $request, RequestHandlerInterface $handler): Response
     {
         // Applies JWT middleware only to API routes
-        $path = parse_url($request->server['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+        $path = $request->getUri()->getPath();
         
         if (!str_starts_with($path, '/wp-json/')) {
             return $handler->handle($request);
@@ -31,7 +33,7 @@ class ApiAuthMiddleware implements MiddlewareInterface
 
         // If the route is for public reading of posts, maybe we can let it pass
         // But let's implement the check for all, and if it's not authenticated, we set it globally
-        $guard = new JwtGuard($this->userRepository, $request);
+        $guard = new JwtGuard($this->userRepository, new TuskRequest($request));
         
         if ($guard->check()) {
             // If we need to pass it to the request, we can do it later.
@@ -41,8 +43,8 @@ class ApiAuthMiddleware implements MiddlewareInterface
         }
 
         // Example: if it is POST in wp-json, we require auth
-        if ($request->method() !== 'GET' && !$guard->check()) {
-            return Response::json([
+        if ($request->getMethod() !== 'GET' && !$guard->check()) {
+            return TuskResponse::json([
                 'code' => 'rest_unauthorized',
                 'message' => 'Sorry, you are not allowed to do that.',
                 'data' => ['status' => 401]

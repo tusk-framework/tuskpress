@@ -20,7 +20,7 @@ use TuskPress\Infrastructure\Persistence\MySqlPostRepository;
  * ApiPostController — REST API /wp-json/wp/v2/posts
  * Compatible with the WP REST API v2.
  */
-#[Service]
+#[Service(scope: 'request')]
 #[Controller]
 class ApiPostController
 {
@@ -30,7 +30,7 @@ class ApiPostController
     ) {}
 
     #[Route('/wp-json/wp/v2/posts', methods: ['GET'])]
-    public function index(Request $request): Response
+    public function index(Request $request): \Psr\Http\Message\ResponseInterface
     {
         $perPage = min(100, max(1, (int) ($request->query['per_page'] ?? 10)));
         $page    = max(1, (int) ($request->query['page'] ?? 1));
@@ -50,14 +50,13 @@ class ApiPostController
 
         $data = array_map([$this, 'formatPost'], $posts);
 
-        return Response::json($data, 200, [
-            'X-WP-Total'      => (string) $total,
-            'X-WP-TotalPages' => (string) ceil($total / $perPage),
-        ]);
+        return Response::json($data)
+            ->withHeader('X-WP-Total', (string) $total)
+            ->withHeader('X-WP-TotalPages', (string) ceil($total / $perPage));
     }
 
     #[Route('/wp-json/wp/v2/posts/{id}', methods: ['GET'])]
-    public function show(int $id, Request $request): Response
+    public function show(int $id, Request $request): \Psr\Http\Message\ResponseInterface
     {
         $post = $this->postRepository->findById(new PostId($id));
 

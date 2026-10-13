@@ -23,7 +23,7 @@ use TuskPress\Theme\ThemeEngine;
  * Implements WordPress URL hierarchy routing:
  * /, /{slug}/, /category/{slug}/, /tag/{slug}/, /?s=search, /feed/
  */
-#[Service]
+#[Service(scope: 'request')]
 #[Controller]
 class FrontendController
 {

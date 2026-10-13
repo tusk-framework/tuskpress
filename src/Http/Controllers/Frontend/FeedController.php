@@ -15,7 +15,8 @@ use Tusk\Web\Http\Response;
 #[Controller]
 class FeedController {
     #[Route('/feed', methods: ['GET'])]
-    public function rss(Request $r): Response { 
-        return Response::html('<?xml version="1.0"?><rss version="2.0"><channel><title>Feed</title></channel></rss>', 200, ['Content-Type' => 'application/rss+xml']); 
+    public function rss(Request $r): \Psr\Http\Message\ResponseInterface {
+        return Response::html('<?xml version="1.0"?><rss version="2.0"><channel><title>Feed</title></channel></rss>')
+            ->withHeader('Content-Type', 'application/rss+xml');
     }
 }

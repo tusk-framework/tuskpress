@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Doctrine\ORM\EntityManagerInterface;
 use Tusk\Cloud\Health\HealthCheckRegistry;
 use Tusk\Cloud\Health\HealthCheckInterface;
 use Tusk\Contracts\Events\EventDispatcherInterface;
@@ -10,8 +9,8 @@ use Tusk\Contracts\Events\ListenerProviderInterface;
 use Tusk\Core\Container\Container;
 use Tusk\Core\Container\ServiceScanner;
 use Tusk\Events\EventDispatcher;
+use Tusk\Events\Compiler\EventCompiler;
 use Tusk\Events\ListenerProvider;
-use Tusk\Security\Contract\UserProviderInterface;
 use Tusk\Web\HttpKernel;
 use TuskPress\Http\Middleware\ApiAuthMiddleware;
 use TuskPress\Http\Middleware\CsrfMiddleware;
@@ -21,7 +20,6 @@ use TuskPress\Http\Middleware\SessionMiddleware;
 use TuskPress\Http\Middleware\RequestScopedSecurityMiddleware;
 use TuskPress\Infrastructure\Database\EntityManagerFactory;
 use TuskPress\Infrastructure\Health\DatabaseHealthCheck;
-use TuskPress\Infrastructure\Persistence\MySqlUserRepository;
 use TuskPress\Infrastructure\Persistence\MySqlOptionRepository;
 
 return static function (Container $container): void {
@@ -33,11 +31,9 @@ return static function (Container $container): void {
     $container->register(\Tusk\Security\Authorization\Gate::class, 'request');
 
     $container->register(EntityManagerFactory::class, 'singleton');
-    $entityManager = $container->get(EntityManagerFactory::class)();
-    $container->instance(EntityManagerInterface::class, $entityManager);
-    $container->instance(ListenerProviderInterface::class, new ListenerProvider($container));
+    $listenerMap = (new EventCompiler())->scan([$source.'/Listeners']);
+    $container->instance(ListenerProviderInterface::class, new ListenerProvider($container, $listenerMap));
     $container->instance(EventDispatcherInterface::class, new EventDispatcher($container->get(ListenerProviderInterface::class)));
-    $container->instance(UserProviderInterface::class, $container->get(MySqlUserRepository::class));
 
     $container->register(DatabaseHealthCheck::class, 'singleton');
     $healthCheck = $container->get(DatabaseHealthCheck::class);

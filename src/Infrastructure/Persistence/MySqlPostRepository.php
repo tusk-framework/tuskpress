@@ -18,7 +18,7 @@ use TuskPress\Domain\Post\PostType;
 /**
  * MySqlPostRepository — Refactored to use Doctrine ORM ("Tusk Way")
  */
-#[Service]
+#[Service(scope: 'request')]
 class MySqlPostRepository implements PostRepository
 {
     public function __construct(

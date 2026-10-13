@@ -2,7 +2,7 @@
 /**
  * Template for 404 page (Not Found).
  */
-require_once __DIR__ . '/header.php';
+require __DIR__ . '/header.php';
 ?>
 
 <div class="hero" style="min-height: 70vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
@@ -17,4 +17,4 @@ require_once __DIR__ . '/header.php';
     </div>
 </div>
 
-<?php require_once __DIR__ . '/footer.php'; ?>
+<?php require __DIR__ . '/footer.php'; ?>

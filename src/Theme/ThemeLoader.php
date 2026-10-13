@@ -8,7 +8,7 @@ use Tusk\Contracts\Attributes\Service;
 /**
  * ThemeLoader — Loads the current theme's functions.php (if it exists).
  */
-#[Service]
+#[Service(scope: 'request')]
 class ThemeLoader
 {
     public function __construct(

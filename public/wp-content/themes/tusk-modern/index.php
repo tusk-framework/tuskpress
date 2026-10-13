@@ -5,7 +5,7 @@
  */
 
 // Includes the header
-require_once __DIR__ . '/header.php';
+require __DIR__ . '/header.php';
 ?>
 
 <div class="hero">
@@ -48,5 +48,5 @@ require_once __DIR__ . '/header.php';
 
 <?php
 // Includes the footer
-require_once __DIR__ . '/footer.php';
+require __DIR__ . '/footer.php';
 ?>

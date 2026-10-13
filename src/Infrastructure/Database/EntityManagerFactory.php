@@ -8,9 +8,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\DBAL\DriverManager;
-use Tusk\Contracts\Attributes\Factory;
 
-#[Factory(provides: EntityManagerInterface::class, scope: 'singleton')]
 class EntityManagerFactory
 {
     public function __invoke(): EntityManagerInterface

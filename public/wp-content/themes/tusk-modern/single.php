@@ -4,7 +4,7 @@
  */
 
 
-require_once __DIR__ . '/header.php';
+require __DIR__ . '/header.php';
 ?>
 
 <div class="single-post-header">
@@ -25,4 +25,4 @@ require_once __DIR__ . '/header.php';
     </article>
 </div>
 
-<?php require_once __DIR__ . '/footer.php'; ?>
+<?php require __DIR__ . '/footer.php'; ?>

@@ -20,35 +20,41 @@ class SessionMiddleware implements MiddlewareInterface
 {
     public function process(Request $request, RequestHandlerInterface $handler): Response
     {
-        // Closes previous session in case the previous request left it open (isolation)
-        if (session_status() === PHP_SESSION_ACTIVE) {
-            session_write_close();
-            session_unset();
-        }
-
+        $this->closeAndReset();
         $sessionName = 'tuskpress_session';
         session_name($sessionName);
 
-        // Injects the session ID received in the cookie by PSR-7
+        // PSR-7 cookies are the only identity source in a persistent worker.
         $cookies = $request->getCookieParams();
-        if (isset($cookies[$sessionName])) {
-            session_id($cookies[$sessionName]);
+        $cookie = $cookies[$sessionName] ?? null;
+        if (is_string($cookie) && preg_match('/\A[a-zA-Z0-9,-]{1,256}\z/', $cookie) === 1) {
+            session_id($cookie);
         }
 
-        session_start();
+        try {
+            if (!session_start(['use_cookies' => false, 'cache_limiter' => '', 'use_strict_mode' => true])) {
+                throw new \RuntimeException('Unable to start the session.');
+            }
+            $response = $handler->handle($request);
+            if (session_status() === PHP_SESSION_ACTIVE) {
+                $cookieStr = sprintf('%s=%s; Path=/; HttpOnly; SameSite=Lax', $sessionName, session_id());
+                $response = $response->withAddedHeader('Set-Cookie', $cookieStr);
+            }
+            return $response;
+        } finally {
+            $this->closeAndReset();
+        }
+    }
 
-        $response = $handler->handle($request);
-
-        // Saves the current session, injects Set-Cookie into the PSR-7 response and clears it for the next request
-        if (session_status() === PHP_SESSION_ACTIVE) {
-            $sessionId = session_id();
-            $cookieStr = sprintf('%s=%s; Path=/; HttpOnly; SameSite=Lax', $sessionName, $sessionId);
-            $response = $response->withAddedHeader('Set-Cookie', $cookieStr);
-            
-            session_write_close();
+    private function closeAndReset(): void
+    {
+        try {
+            if (session_status() === PHP_SESSION_ACTIVE) {
+                session_write_close();
+            }
+        } finally {
             $_SESSION = [];
+            session_id('');
         }
-
-        return $response;
     }
 }

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace TuskPress\Infrastructure\Health;
 
-use Doctrine\ORM\EntityManagerInterface;
+use TuskPress\Infrastructure\Database\EntityManagerFactory;
 use Tusk\Cloud\Health\HealthCheckInterface;
 use Tusk\Contracts\Attributes\Service;
 
 #[Service]
 class DatabaseHealthCheck implements HealthCheckInterface
 {
-    public function __construct(private readonly EntityManagerInterface $em) {}
+    public function __construct(private readonly EntityManagerFactory $factory) {}
 
     public function getName(): string
     {
@@ -20,12 +20,14 @@ class DatabaseHealthCheck implements HealthCheckInterface
 
     public function check(): bool
     {
+        $conn = null;
         try {
-            $conn = $this->em->getConnection();
-            $conn->connect();
-            return $conn->isConnected();
+            $conn = ($this->factory)()->getConnection();
+            return (int) $conn->fetchOne('SELECT 1') === 1;
         } catch (\Throwable $e) {
             return false;
+        } finally {
+            $conn?->close();
         }
     }
 }

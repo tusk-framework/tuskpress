@@ -12,7 +12,7 @@ use Tusk\Contracts\Attributes\Service;
 use Tusk\Web\Http\Response as TuskResponse;
 use TuskPress\Infrastructure\Persistence\MySqlOptionRepository;
 
-#[Service]
+#[Service(scope: 'request')]
 class InstallCheckMiddleware implements MiddlewareInterface
 {
     public function __construct(private readonly MySqlOptionRepository $optionRepo) {}

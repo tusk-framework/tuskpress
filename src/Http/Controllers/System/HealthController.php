@@ -12,7 +12,7 @@ use Tusk\Web\Http\Response;
 final class HealthController
 {
     #[Route('/healthz')]
-    public function health(): Response
+    public function health(): \Psr\Http\Message\ResponseInterface
     {
         return Response::html('ok');
     }

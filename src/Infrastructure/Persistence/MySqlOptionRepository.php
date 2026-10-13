@@ -12,7 +12,7 @@ use TuskPress\Domain\Option\Option;
  * MySqlOptionRepository — Manages wp_options (site settings).
  * Includes in-memory cache to reduce repeated queries.
  */
-#[Service]
+#[Service(scope: 'request')]
 class MySqlOptionRepository
 {
     /** @var array<string, mixed> */
