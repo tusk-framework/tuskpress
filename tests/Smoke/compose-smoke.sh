@@ -11,8 +11,12 @@ cookie_file="${TMPDIR:-/tmp}/${project}.cookies"
 cleanup_armed=0
 
 compose_project() {
-    local configured
-    configured="$("${compose[@]}" config --project-name)"
+    local config_json configured
+    config_json="$("${compose[@]}" config --format json)" || return 1
+    configured="$(php -r '$config = json_decode(stream_get_contents(STDIN), true); if (!is_array($config) || !isset($config["name"]) || !is_string($config["name"])) { exit(1); } echo $config["name"];' <<< "$config_json")" || {
+        printf 'Refusing Compose operation: project identity validation failed (%s / invalid JSON name)\n' "$project" >&2
+        return 1
+    }
     [[ "$configured" == "$project" && "$project" =~ $project_pattern ]] || {
         printf 'Refusing Compose operation: project identity validation failed (%s / %s)\n' "$project" "$configured" >&2
         return 1

@@ -111,4 +111,15 @@ final class DockerContractTest extends TestCase
         self::assertStringContainsString("--write-out '%{http_code}|%{redirect_url}'", $smoke);
         self::assertStringContainsString("IFS='|' read -r login_status login_location <<< \"\$login_result\"", $smoke);
     }
+
+    public function test_smoke_validates_project_identity_from_compose_json_config(): void
+    {
+        $smoke = file_get_contents($this->root.'/tests/Smoke/compose-smoke.sh');
+
+        self::assertIsString($smoke);
+        self::assertStringContainsString('config --format json', $smoke);
+        self::assertStringContainsString('["name"]', $smoke);
+        self::assertStringContainsString('[[ "$configured" == "$project" && "$project" =~ $project_pattern ]]', $smoke);
+        self::assertStringNotContainsString('config --project-name', $smoke);
+    }
 }
