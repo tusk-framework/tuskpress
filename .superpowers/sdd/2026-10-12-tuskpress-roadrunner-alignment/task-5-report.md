@@ -70,3 +70,25 @@ The requested README, CI, Composer, and contract changes are in scope. The full 
 ### Fix-round commit
 
 `ci: verify Compose smoke prerequisites`
+
+## Fix round 2 — Document the RoadRunner sockets extension
+
+### Changes and test-first evidence
+
+- Added a README contract asserting `sockets` appears in the local PHP extension prerequisites and that PDO's MySQL driver remains specifically tied to database-backed workflows.
+- Ran the focused README contract before editing the README: RED (1 test, 1 failure) because `sockets` was missing from the local prerequisite list.
+- Added `sockets` to the documented local PHP extension list; Docker app startup remains documented as requiring no host PHP or Composer.
+- Focused README contract after the edit: passed (1 test, 19 assertions).
+- `composer test`: passed (27 tests, 128 assertions).
+- `composer validate --strict`: passed (`./composer.json is valid`).
+- Docker/smoke was not run, as directed.
+
+### Self-review
+
+- This round changes only the README contract, README prerequisite list, and this report. Workflow and runtime files are unchanged.
+- The local prerequisite list now covers `fileinfo`, `json`, `mbstring`, `sockets`, and PDO; `pdo_mysql` is retained as the additional driver needed for database-backed workflows.
+- Preserved the unrelated `.phpunit.cache/` worktree artifact.
+
+### Fix-round commit
+
+`docs: list sockets PHP prerequisite`

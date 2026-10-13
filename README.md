@@ -52,7 +52,7 @@ The application uses Tusk Framework controllers, routing, middleware, and depend
 
 ## Local development
 
-For local tests and static analysis, install PHP 8.2 or newer, Composer 2, and the PHP extensions required by the project: `fileinfo`, `json`, `mbstring`, and PDO (with the MySQL PDO driver for database-backed workflows). Then install development dependencies and run the checks:
+For local tests and static analysis, install PHP 8.2 or newer, Composer 2, and the PHP extensions required by the project: `fileinfo`, `json`, `mbstring`, `sockets`, and PDO (with the MySQL PDO driver for database-backed workflows). Then install development dependencies and run the checks:
 
 ```bash
 composer install

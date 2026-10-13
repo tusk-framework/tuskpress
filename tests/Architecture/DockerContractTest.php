@@ -34,6 +34,7 @@ final class DockerContractTest extends TestCase
         self::assertStringContainsString('PHP CLI', $readme);
         self::assertStringContainsString('`seq`', $readme);
         self::assertStringContainsString('`sleep`', $readme);
+        self::assertMatchesRegularExpression('/PHP extensions required by the project: `fileinfo`, `json`, `mbstring`, `sockets`, and PDO \(with the MySQL PDO driver for database-backed workflows\)/', $readme);
         self::assertDoesNotMatchRegularExpression('/auto[- ]generated credentials/i', $readme);
         self::assertDoesNotMatchRegularExpression('/WordPress (?:source[- ]code )?fork/i', $readme);
         self::assertDoesNotMatchRegularExpression('/(?:starts?|loads?|runs?|entry point|powered by)\s+(?:the\s+)?(?:root\s+)?worker\.php|(?:serializes?|injects?)\s+requests?\s+(?:as\s+)?NDJSON/i', $readme);
