@@ -98,7 +98,7 @@ final class DockerContractTest extends TestCase
         self::assertStringContainsString('[[ "$login_status" == "302" ]]', $smoke);
         self::assertStringContainsString('[[ "$login_location" == "http://127.0.0.1:8080/wp-admin" ]]', $smoke);
         self::assertStringContainsString('--cookie "$cookie_file" --cookie-jar "$cookie_file"', $smoke);
-        self::assertStringContainsString('[[ "$admin_response" == *"${admin_user^}"* ]]', $smoke);
+        self::assertStringContainsString('[[ "$admin_response" == *"class=\"user-role\">Administrator"* ]]', $smoke);
     }
 
     public function test_smoke_login_post_occurs_once_and_captures_status_and_redirect_together(): void

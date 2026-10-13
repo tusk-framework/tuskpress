@@ -90,5 +90,5 @@ IFS='|' read -r login_status login_location <<< "$login_result"
 [[ "$login_location" == "http://127.0.0.1:8080/wp-admin" ]]
 
 admin_response="$(curl --silent --show-error --fail --cookie "$cookie_file" http://127.0.0.1:8080/wp-admin)"
-[[ "$admin_response" == *"${admin_user^}"* ]]
+[[ "$admin_response" == *"class=\"user-role\">Administrator"* ]]
 printf 'Smoke passed: healthz, installer, installation POST, login redirect, and authenticated admin dashboard.\n'
