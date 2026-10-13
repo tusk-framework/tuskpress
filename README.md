@@ -1,70 +1,67 @@
 # TuskPress
 
-> 💡 **Example Project**  
-> TuskPress is a canonical example application created to demonstrate how to build a real-world, high-performance application using the **Tusk Framework** running natively on the **Tusk Engine**. It serves as a reference architecture and a learning resource for developers.
+![License](https://img.shields.io/badge/license-GPL--2.0--or--later-blue)
+![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4)
+[![Tusk Framework](https://img.shields.io/badge/Tusk%20Framework-1.x-4B6)](https://github.com/tusk-framework/tusk-framework)
+[![Tusk Engine](https://img.shields.io/badge/Tusk%20Engine-v0.3.4-4B6)](https://github.com/tusk-framework/tusk-engine)
+[![RoadRunner](https://img.shields.io/badge/RoadRunner-2025.1.15-4B6)](https://roadrunner.dev/)
 
-TuskPress is a fully functional, ultra-fast content management system (inspired by WordPress). It showcases how to leverage clean architecture, Dependency Injection, Repositories, and the Long-Lived Process model within the Tusk ecosystem.
+TuskPress is an example and reference CMS inspired by WordPress. It demonstrates an application built with Tusk Framework and the Tusk Engine, using familiar publishing concepts and a deliberately limited set of CMS features. It is not derived from WordPress source code and does not claim full WordPress compatibility.
 
-## ✨ Key Features
+The repository includes a first-run installer, administrator login and dashboard, post and page presentation, themes, plugin discovery and several admin/API surfaces. Some screens and operations are incomplete examples; the presence of a route or interface does not imply complete production-ready CMS behavior. In particular, CSRF protection is not implemented yet. Track that work in [issue #1](https://github.com/tusk-framework/tuskpress/issues/1); the current middleware does not protect forms.
 
-- **Long-Lived Process Architecture**: Powered by Go (Tusk Engine), PHP stays loaded in memory, eliminating the "boot-and-die" overhead of traditional PHP apps.
-- **Modern Admin UI**: A beautiful, responsive, glassmorphism-inspired dark mode admin panel.
-- **Familiar Ecosystem**: Supports WordPress-style hooks (Action/Filter) via our custom `HookBus`, themes, and plugins without legacy spaghetti code.
-- **Domain-Driven Design (DDD)**: Clean domain models (Post, User, Meta, Term) decoupled from the infrastructure layer using Doctrine-inspired Repositories.
-- **Native Async Jobs**: Built-in background job execution for tasks like publishing scheduled posts, without relying on web-traffic-triggered crons.
+## Run with Docker Compose
 
-## 🚀 How to Run (Docker Compose)
+Docker Desktop (or Docker Engine with the Compose plugin) is required and should be running. PHP and Composer are not needed on the host for this workflow; the image builds the PHP application and installs its dependencies.
 
-TuskPress is designed to run isolated, without the need to install PHP, Nginx, or Apache on your host machine. The project includes an Alpine-based image running the Tusk Engine in Go.
-
-To bring up the project (ensure Docker Desktop is running):
+From the repository root, copy the example environment file to the ignored local `.env`, then build and start the services:
 
 ```bash
-# 1. Build the image (it will automatically install dependencies via Composer)
-docker-compose build
-
-# 2. Start the service in the background (MySQL database and the Tusk Web Server)
-docker-compose up -d
+cp .env.example .env
+docker compose up --build -d
 ```
 
-Access the application in your browser: **[http://localhost:8080](http://localhost:8080)**  
-Access the Admin Panel: **[http://localhost:8080/wp-admin](http://localhost:8080/wp-admin)**
+On PowerShell, the copy command is `Copy-Item .env.example .env`. The example credentials are for local development; change them before exposing the stack beyond your machine.
 
-*(The default credentials are auto-generated on first install or via the initial migration script.)*
+Open the installer at <http://localhost:8080/wp-admin/install.php>. Choose a site title, administrator username, password, and email address in the installer. These are user-selected credentials; none are generated automatically. After installation, sign in at <http://localhost:8080/wp-login>.
 
-## 🧠 Architecture: The End of "Boot-and-Die"
+The Compose stack provides MySQL and the TuskPress web service. MySQL data is stored in the `tuskpress_db_data` named volume, and uploaded files are stored in `tuskpress_uploads`. `docker compose down` stops and removes the containers while preserving both volumes. To also permanently delete the database and uploads, run `docker compose down --volumes`.
 
-Unlike traditional PHP (where Nginx triggers FPM to load the entire application on every request), TuskPress uses the **Long-Lived Process** concept.
+Check service state and health with:
 
-1. When you run the container, the `tusk-engine` (in Go) opens port 8080 and starts the `worker.php` file in the background.
-2. The `worker.php` loads the IoC Container and all repositories into memory **only once**.
-3. New incoming requests to the HTTP server (Go) are rapidly serialized via *NDJSON* and injected into the framework's standard input (STDIN).
-4. PHP processes the business logic and returns the response (STDOUT). Memory remains intact, making responses incredibly fast.
+```bash
+docker compose ps
+docker compose logs --follow web mysql
+```
 
-### 🗂️ Project Structure
+The web health check is available at <http://localhost:8080/healthz>. A healthy response is `ok`.
 
-- `worker.php` — The *Entry Point* of the Tusk Engine that keeps the infinite request loop active.
-- `public/` — Static files (CSS, JS, Images) and the frontend bootstrap (`index.php`).
-- `public/wp-content/` — Home for Themes (`tusk-modern`) and Plugins.
-- `bootstrap/app.php` — Central initialization of the Container (`Tusk\Core\Container\Container`) and the HTTP Kernel.
-- `src/` — Core source code (Controllers, Middleware, Domain Entities, Infrastructure).
-- `migrations/` — SQL scripts for database initialization and schema setup.
+### Troubleshooting
 
-## 🎨 Themes & Plugins
+- If Docker commands cannot connect to the daemon, start Docker Desktop or the Docker Engine service and retry.
+- If port 8080 is already in use, stop the other service using it before starting this stack.
+- If the image build reports missing PHP extensions, use the supplied Dockerfile: it installs `mbstring`, `pdo_mysql`, and `sockets`, and checks Composer platform requirements. Avoid bypassing that check.
+- If Composer cannot resolve or install packages during the image build, check network access and the Composer output, then retry the build with `docker compose up --build -d`.
+- If RoadRunner or the web service fails its health check, inspect `docker compose logs web`; check MySQL readiness and credentials with `docker compose logs mysql` and confirm `.env` has all four `MYSQL_*` values.
 
-TuskPress keeps the familiar extensibility of WordPress but implements it with modern PHP 8.2 features.
+## Runtime lifecycle
 
-- **Themes**: Reside in `public/wp-content/themes/`. The default `tusk-modern` theme uses standard templates (`index.php`, `single.php`, `page.php`).
-- **Plugins**: Hook into the system lifecycle via the `HookBus`. Create a single `.php` file or a directory in `public/wp-content/plugins/` to get started.
+Tusk Engine validates the application setup and manages the RoadRunner process. RoadRunner owns HTTP serving, its worker pool, and worker lifecycle. The application is loaded into a long-lived PHP worker and remains loaded across requests. Request-scoped services and process state therefore need correct per-request handling and reset; they must not leak one request's state into another.
 
-## 🤝 The Tusk Ecosystem
+The application uses Tusk Framework controllers, routing, middleware, and dependency injection. Docker pins Tusk Engine `v0.3.4` and RoadRunner `2025.1.15` in the Dockerfile. There is no hand-authored root `worker.php` or project-owned NDJSON request loop.
 
-This project is part of the official Tusk ecosystem:
+## Local development
 
-- [Tusk Engine](https://github.com/tusk-framework/tusk-engine) - The Go heart.
-- [Tusk Framework](https://github.com/tusk-framework/tusk-framework) - The PHP brain.
-- [Tusk Docs](https://github.com/tusk-framework/tusk-docs) - The full documentation.
+For local tests and static analysis, install PHP 8.2 or newer, Composer 2, and the PHP extensions required by the project: `fileinfo`, `json`, `mbstring`, and PDO (with the MySQL PDO driver for database-backed workflows). Then install development dependencies and run the checks:
 
-## 📄 License
+```bash
+composer install
+composer test
+composer analyse
+```
 
-This project is open-source and available under the MIT License.
+The Docker image is based on PHP 8.3 and installs `mbstring`, `pdo_mysql`, and `sockets`. The local unit and architecture test suite does not require a host database. To run the full Compose smoke check locally, use Bash, Docker Compose, curl, and PHP CLI; run `composer test:smoke`.
+
+## License
+
+TuskPress is licensed under [GPL-2.0-or-later](LICENSE).

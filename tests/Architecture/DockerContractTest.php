@@ -15,6 +15,23 @@ final class DockerContractTest extends TestCase
         $this->root = dirname(__DIR__, 2);
     }
 
+    public function test_readme_documents_real_first_run_credentials_and_commands(): void
+    {
+        $readme = file_get_contents($this->root.'/README.md');
+
+        self::assertIsString($readme);
+        self::assertStringContainsString('.env.example', $readme);
+        self::assertStringContainsString('docker compose up --build -d', $readme);
+        self::assertStringContainsString('http://localhost:8080/wp-admin/install.php', $readme);
+        self::assertStringContainsString('user-selected', strtolower($readme));
+        self::assertStringContainsString('RoadRunner', $readme);
+        self::assertStringContainsString('GPL-2.0-or-later', $readme);
+        self::assertStringContainsString('https://github.com/tusk-framework/tuskpress/issues/1', $readme);
+        self::assertDoesNotMatchRegularExpression('/auto[- ]generated credentials/i', $readme);
+        self::assertDoesNotMatchRegularExpression('/WordPress (?:source[- ]code )?fork/i', $readme);
+        self::assertDoesNotMatchRegularExpression('/(?:starts?|loads?|runs?|entry point|powered by)\s+(?:the\s+)?(?:root\s+)?worker\.php|(?:serializes?|injects?)\s+requests?\s+(?:as\s+)?NDJSON/i', $readme);
+    }
+
     public function test_dockerfile_does_not_copy_local_engine_binary(): void
     {
         $dockerfile = file_get_contents($this->root.'/Dockerfile');

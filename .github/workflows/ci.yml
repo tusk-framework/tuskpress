@@ -4,6 +4,9 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     name: PHP ${{ matrix.php }}
@@ -31,3 +34,29 @@ jobs:
 
       - name: Run tests
         run: composer test
+
+  smoke:
+    name: Docker Compose smoke
+    runs-on: ubuntu-latest
+    needs: test
+    env:
+      MYSQL_DATABASE: tuskpress_ci
+      MYSQL_USER: tuskpress_ci
+      MYSQL_PASSWORD: ci-smoke-password
+      MYSQL_ROOT_PASSWORD: ci-smoke-root-password
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathai/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: fileinfo, mbstring, pdo_mysql
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Run Docker Compose smoke test
+        run: composer test:smoke

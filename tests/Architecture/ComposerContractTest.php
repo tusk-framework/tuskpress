@@ -8,6 +8,22 @@ use PHPUnit\Framework\TestCase;
 
 final class ComposerContractTest extends TestCase
 {
+    public function test_ci_has_a_read_only_compose_smoke_gate_after_the_php_matrix(): void
+    {
+        $root = dirname(__DIR__, 2);
+        $workflow = file_get_contents($root.'/.github/workflows/ci.yml');
+        $manifest = json_decode(file_get_contents($root.'/composer.json'), true, flags: JSON_THROW_ON_ERROR);
+
+        self::assertIsString($workflow);
+        self::assertStringContainsString("permissions:\n  contents: read", $workflow);
+        self::assertStringContainsString("php: ['8.2', '8.5']", $workflow);
+        self::assertMatchesRegularExpression('/smoke:\n(?:(?!\n  [a-zA-Z0-9_-]+:).)*needs: test/s', $workflow);
+        self::assertMatchesRegularExpression('/smoke:\n(?:(?!\n  [a-zA-Z0-9_-]+:).)*runs-on: ubuntu-latest/s', $workflow);
+        self::assertMatchesRegularExpression('/smoke:\n(?:(?!\n  [a-zA-Z0-9_-]+:).)*MYSQL_DATABASE:\s*\S+.*MYSQL_USER:\s*\S+.*MYSQL_PASSWORD:\s*\S+.*MYSQL_ROOT_PASSWORD:\s*\S+/s', $workflow);
+        self::assertStringContainsString('composer test:smoke', $workflow);
+        self::assertSame('bash tests/Smoke/compose-smoke.sh', $manifest['scripts']['test:smoke'] ?? null);
+    }
+
     public function test_project_requires_the_published_stable_framework_package(): void
     {
         $manifest = json_decode(file_get_contents(dirname(__DIR__, 2).'/composer.json'), true, flags: JSON_THROW_ON_ERROR);
