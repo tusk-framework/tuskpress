@@ -215,12 +215,16 @@ class User implements UserInterface
         UserRole $role,
         string   $plainPassword,
     ): self {
+        $nicename = mb_strtolower($login, 'UTF-8');
+        $nicename = preg_replace('/[^\p{L}\p{N}]+/u', '-', $nicename) ?? '';
+        $nicename = trim($nicename, '-');
+
         return new self(
             id:           $id,
             login:        $login,
             email:        $email,
             displayName:  $displayName,
-            nicename:     sanitize_title($login),
+            nicename:     $nicename,
             url:          '',
             role:         $role,
             passwordHash: password_hash($plainPassword, PASSWORD_BCRYPT, ['cost' => 12]),
