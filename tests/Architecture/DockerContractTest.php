@@ -56,4 +56,31 @@ final class DockerContractTest extends TestCase
         self::assertStringNotContainsString('container_name:', $compose);
         self::assertStringNotContainsString('init.sql', $compose);
     }
+
+    public function test_web_service_has_dependency_free_healthcheck_and_smoke_waits_for_health(): void
+    {
+        $compose = file_get_contents($this->root.'/docker-compose.yml');
+        $smoke = file_get_contents($this->root.'/tests/Smoke/compose-smoke.sh');
+
+        self::assertIsString($compose);
+        self::assertIsString($smoke);
+        self::assertMatchesRegularExpression('/web:\n(?:(?!\n  mysql:).)*healthcheck:\n(?:(?!\n  mysql:).)*php.*healthz/s', $compose);
+        self::assertStringContainsString('up --detach --build --wait --wait-timeout', $smoke);
+        self::assertStringContainsString('healthz)', $smoke);
+        self::assertStringContainsString('down --volumes --remove-orphans', $smoke);
+    }
+
+    public function test_smoke_logs_in_after_install_and_verifies_redirect_and_admin_session(): void
+    {
+        $smoke = file_get_contents($this->root.'/tests/Smoke/compose-smoke.sh');
+
+        self::assertIsString($smoke);
+        self::assertStringContainsString('--data-urlencode "log=${admin_user}"', $smoke);
+        self::assertStringContainsString('--data-urlencode "pwd=${admin_password}"', $smoke);
+        self::assertStringContainsString("--data-urlencode 'redirect_to=/wp-admin'", $smoke);
+        self::assertStringContainsString('[[ "$login_status" == "302" ]]', $smoke);
+        self::assertStringContainsString('[[ "$login_location" == "http://127.0.0.1:8080/wp-admin" ]]', $smoke);
+        self::assertStringContainsString('--cookie "$cookie_file" --cookie-jar "$cookie_file"', $smoke);
+        self::assertStringContainsString('[[ "$admin_response" == *"${admin_user^}"* ]]', $smoke);
+    }
 }

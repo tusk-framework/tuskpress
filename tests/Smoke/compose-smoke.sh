@@ -45,7 +45,7 @@ if curl --silent --show-error --fail http://127.0.0.1:8080/healthz >/dev/null 2>
     exit 1
 fi
 
-"${compose[@]}" up --build --detach
+"${compose[@]}" up --detach --build --wait --wait-timeout 180
 
 wait_for_http() {
     local url="$1" attempt
@@ -66,15 +66,30 @@ installer="$(curl --silent --show-error --fail http://127.0.0.1:8080/wp-admin/in
 admin_user="smoke-${run_id}"
 admin_password="Smoke-${run_id}-Pass!"
 admin_email="${admin_user}@example.test"
-status="$(curl --silent --show-error --output /dev/null --cookie-jar "$cookie_file" \
+install_status="$(curl --silent --show-error --output /dev/null --cookie-jar "$cookie_file" \
     --data-urlencode 'site_title=TuskPress Smoke' \
     --data-urlencode "admin_user=${admin_user}" \
     --data-urlencode "admin_pass=${admin_password}" \
     --data-urlencode "admin_email=${admin_email}" \
     http://127.0.0.1:8080/wp-admin/install.php \
     --write-out '%{http_code}')"
-[[ "$status" == "302" ]]
+[[ "$install_status" == "302" ]]
+
+login_status="$(curl --silent --show-error --output /dev/null --cookie "$cookie_file" --cookie-jar "$cookie_file" \
+    --data-urlencode "log=${admin_user}" \
+    --data-urlencode "pwd=${admin_password}" \
+    --data-urlencode 'redirect_to=/wp-admin' \
+    http://127.0.0.1:8080/wp-login \
+    --write-out '%{http_code}')"
+[[ "$login_status" == "302" ]]
+login_location="$(curl --silent --show-error --output /dev/null --cookie "$cookie_file" \
+    --data-urlencode "log=${admin_user}" \
+    --data-urlencode "pwd=${admin_password}" \
+    --data-urlencode 'redirect_to=/wp-admin' \
+    http://127.0.0.1:8080/wp-login \
+    --write-out '%{redirect_url}')"
+[[ "$login_location" == "http://127.0.0.1:8080/wp-admin" ]]
 
 admin_response="$(curl --silent --show-error --fail --cookie "$cookie_file" http://127.0.0.1:8080/wp-admin)"
 [[ "$admin_response" == *"${admin_user^}"* ]]
-printf 'Smoke passed: healthz, installer, installation POST, and authenticated admin dashboard.\n'
+printf 'Smoke passed: healthz, installer, installation POST, login redirect, and authenticated admin dashboard.\n'
